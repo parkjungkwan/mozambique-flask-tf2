@@ -11,7 +11,7 @@ class TitanicController(object):
     
     dataset = Dataset()
     model = TitanicModel()
-    
+
     def preprocess(self,train, test) -> object: # 전처리
         model = self.model
         this = self.dataset
@@ -19,9 +19,12 @@ class TitanicController(object):
         this.test = model.new_model(test)
         this.id = this.test['PassengerId']
         # columns 편집과정
-
+        this = model.sex_norminal(this)
+        this = model.age_ordinal(this)
+        this = model.fare_ordinal(this)
+        this = model.embarked_norminal(this)
         return this
-    
+
     def modeling(self,train, test) -> object: # 모델생성
         model = self.model
         this = self.preprocess(train, test)

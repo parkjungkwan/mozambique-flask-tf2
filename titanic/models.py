@@ -53,9 +53,8 @@ class TitanicModel(object):
 
     @staticmethod
     def sex_norminal(this)-> object: #  female -> 1 , male -> 0
-        gender_mapping = {"male" : 0, "female" : 1}
         for i in [this.train,this.test]:
-            i['Gender'] = i['Sex'].map(gender_mapping)
+            i['Gender'] = i['Sex'].map({"male" : 0, "female" : 1})
         return this
 
     @staticmethod
@@ -63,11 +62,17 @@ class TitanicModel(object):
         return this
 
     @staticmethod
-    def fare_ordinal(this) -> object: # 비싼것, 보통, 저렴한것
+    def fare_ordinal(this) -> object: # 4등분 pd.qcut() 사용
+        for i in [this.train,this.test]:
+            i['FareBand'] = pd.qcut(i['Fare'], 4, labels={1, 2, 3, 4})
         return this
 
     @staticmethod
     def embarked_norminal(this)-> object: # 승선항구 S, C, Q
+        this.train = this.train.fillna({'Embarked':'S'})
+        this.test = this.test.fillna({'Embarked': 'S'})
+        for i in [this.train,this.test]:
+            i['Embarked'] = i['Embarked'].map({"S": 1, "C": 2, "Q":3})
         return this
 
 if __name__ == '__main__':
@@ -75,6 +80,6 @@ if __name__ == '__main__':
     this = Dataset()
     this.train = t.new_model('train.csv')
     this.test = t.new_model('test.csv')
-    this = TitanicModel.sex_norminal(this)
+    this = TitanicModel.embarked_norminal(this)
     print(this.train.columns)
-    print(this.train.head())
+    print(this.train.tail(3))

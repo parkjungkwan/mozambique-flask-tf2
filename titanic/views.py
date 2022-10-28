@@ -37,4 +37,7 @@ class TitanicController(object):
     
     def submit(self): # 배포
         pass
-    
+
+
+if __name__ == '__main__':
+    pass

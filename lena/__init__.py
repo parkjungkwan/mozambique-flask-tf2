@@ -25,7 +25,7 @@ cv2.destroyAllWindows() 화면에 나타난 윈도우를 종료합니다.
 if __name__ == '__main__':
     api = LennaController()
     while True:
-        menu = Common.menu(["종료", "원본보기", "모델링", "머신러닝", "배포"])
+        menu = Common.menu(["종료", "원본보기", "그레이 스케일", "머신러닝", "배포"])
         if menu == "0":
             print(" ### 종료 ### ")
             break

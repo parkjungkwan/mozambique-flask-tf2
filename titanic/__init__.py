@@ -18,7 +18,9 @@ if __name__ == '__main__':
             plot.draw_embarked()
         elif menu == "2":
             print(" ### 모델링 ### ")
-            df = api.modeling('train.csv', 'test.csv')
+            this = api.modeling('train.csv', 'test.csv')
+            print(this.train.head())
+            print(this.train.columns)
         elif menu == "3":
             print(" ### 머신러닝 ### ")
             df = api.learning('train.csv', 'test.csv')

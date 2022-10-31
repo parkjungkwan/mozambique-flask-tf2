@@ -85,12 +85,34 @@ class TitanicModel(object):
             i['Embarked'] = i['Embarked'].map({"S": 1, "C": 2, "Q":3})
         return this
 
+    @staticmethod
+    def title_norminal(this)-> object:
+        combine = [this.train, this.test]
+        for i in combine:
+            i['Title'] = i.Name.str.extract('([A-Za-z]+)\.', expand=False)
+        for i in combine:
+            i['Title'] = i['Title'].replace(['Countess', 'Lady', 'Sir'], 'Royal')
+            i['Title'] = i['Title'].replace(['Capt', 'Col', 'Don', 'Dr', 'Major', 'Rev', 'Jonkheer', 'Dona', 'Mme'], 'Rare')
+            i['Title'] = i['Title'].replace('Mlle', 'Mr')
+            i['Title'] = i['Title'].replace('Ms', 'Miss')
+            i['Title'] = i['Title'].fillna(0)
+            i['Title'] = i['Title'].map({
+                'Mr': 1,
+                'Miss': 2,
+                'Mrs' : 3,
+                'Master' : 4,
+                'Royal' : 5,
+                'Rare' : 6
+            })
+        return this
+
+
 if __name__ == '__main__':
     t = TitanicModel()
     this = Dataset()
-    this.train = t.new_model('train.csv')
+    this.train = TitanicModel().new_model('train.csv')
     this.test = t.new_model('test.csv')
     this = TitanicModel.embarked_norminal(this)
     print(this.train.columns)
-    print(f"null 갯수: {this.train['Embarked'].isnull().sum()}")
+    print(f"null 갯수: {this.train.isnull().sum()}")
     print(this.train.head(3))

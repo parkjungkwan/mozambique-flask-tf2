@@ -7,6 +7,20 @@ from PIL import Image
 from util.dataset import Dataset
 import matplotlib.pyplot as plt
 
+class CannyModel(object):
+    def __init__(self):
+        self.ADAPTIVE_THRESH_MEAN_C = 0
+        self.ADAPTIVE_THRESH_GAUSSIAN_C = 1
+        self.THRESH_BINARY = 2
+        self.THRESH_BINARY_INV = 3
+        headers = {'User-Agent': 'My User Agent 1.0'}
+        res = requests.get("https://docs.opencv.org/4.x/roi.jpg",
+                           headers=headers)
+        self.lsj = Image.open(BytesIO(res.content))
+
+    def get(self):
+        return np.array(self.lsj)
+
 class LennaModel(object):
 
     dataset = Dataset()
@@ -220,7 +234,10 @@ def imshow(img):
     plt.show()
 
 if __name__ == '__main__':
+    '''
     img = gray_scale(LennaModel().get())
     img = GaussianBlur(img, 1, 1).get()
     img = Canny(img, 50, 150).get()
     imshow(img)
+    '''
+    CannyModel()

@@ -1,5 +1,7 @@
 import cv2
+from matplotlib import pyplot as plt
 
+from lenna.models import CannyModel
 from lenna.views import LennaController
 from util.common import Common
 
@@ -25,7 +27,7 @@ cv2.destroyAllWindows() 화면에 나타난 윈도우를 종료합니다.
 if __name__ == '__main__':
     api = LennaController()
     while True:
-        menu = Common.menu(["종료", "원본보기", "그레이 스케일", "머신러닝", "배포"])
+        menu = Common.menu(["종료", "원본보기", "그레이스케일", "엣지검출", "배포"])
         if menu == "0":
             print(" ### 종료 ### ")
             break
@@ -38,9 +40,17 @@ if __name__ == '__main__':
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         elif menu == "2":
-            print(" ### 모델링 ### ")
+            print(" ### 그레이스케일 ### ")
         elif menu == "3":
-            print(" ### 머신러닝 ### ")
+            print(" ### 엣지검출 ### ")
+            img = CannyModel().get()
+            edges = cv2.Canny(img, 100, 200)
+
+            plt.subplot(121), plt.imshow(img, cmap='gray')
+            plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+            plt.subplot(122), plt.imshow(edges, cmap='gray')
+            plt.title('Edge Image'), plt.xticks([170]), plt.yticks([200])
+            plt.show()
         elif menu == "4":
             print(" ### 배포 ### ")
         else:

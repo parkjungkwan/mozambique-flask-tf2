@@ -60,8 +60,49 @@ class LennaModel(object):
     def non_maximum_suppression(self):
         pass
 
-    def edge_tracking(self):
-        pass
+    def edge_tracking(self, src, adaptiveMethod, thresholdType, blocksize, C):
+        mask = np.zeros((blocksize, blocksize))
+        if adaptiveMethod == self.ADAPTIVE_THRESH_MEAN_C:
+            pass
+        elif adaptiveMethod == self.ADAPTIVE_THRESH_GAUSSIAN_C:
+            sigma = (blocksize - 1) / 8
+            i = np.arange(-(blocksize // 2), (blocksize // 2) + 1)
+            j = np.arange(-(blocksize // 2), (blocksize // 2) + 1)
+            i, j = np.meshgrid(i, j)
+            mask = np.exp(-((i ** 2 / (2 * sigma ** 2)) + (j ** 2 / (2 * sigma ** 2)))) / (2 * np.pi * sigma * sigma)
+        else:
+            return -1
+        # 가장자리 픽셀을 (커널의 길이 // 2) 만큼 늘리고 새로운 행렬에 저장
+        halfX = blocksize // 2
+        halfY = blocksize // 2
+        cornerPixel = np.zeros((src.shape[0] + halfX * 2, src.shape[1] + halfY * 2), dtype=np.uint8)
+
+        # (커널의 길이 // 2) 만큼 가장자리에서 안쪽(여기서는 1만큼 안쪽)에 있는 픽셀들의 값을 입력 이미지의 값으로 바꾸어 가장자리에 0을 추가한 효과를 봄
+        cornerPixel[halfX:cornerPixel.shape[0] - halfX, halfY:cornerPixel.shape[1] - halfY] = src
+
+        dst = np.zeros((src.shape[0], src.shape[1]), dtype=np.float64)
+
+        for y in np.arange(src.shape[1]):
+            for x in np.arange(src.shape[0]):
+                # 필터링 연산
+                threshold = 0
+                if adaptiveMethod == self.ADAPTIVE_THRESH_MEAN_C:
+                    threshold = cornerPixel[x: x + mask.shape[0], y: y + mask.shape[1]].mean() - C
+
+                elif adaptiveMethod == self.ADAPTIVE_THRESH_GAUSSIAN_C:
+                    threshold = (mask * cornerPixel[x: x + mask.shape[0], y: y + mask.shape[1]]).sum() / mask.sum() - C
+
+                if thresholdType == self.THRESH_BINARY:
+                    if cornerPixel[x, y] > threshold:
+                        dst[x, y] = 255
+                    else:
+                        dst[x, y] = 0
+                elif thresholdType == self.THRESH_BINARY_INV:
+                    if cornerPixel[x, y] > threshold:
+                        dst[x, y] = 0
+                    else:
+                        dst[x, y] = 255
+        return dst
 
 class GaussianBlur(object):
     def __init__(self, src, sigmax, sigmay):

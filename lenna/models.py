@@ -12,47 +12,26 @@ class LennaModel(object):
     dataset = Dataset()
 
     def __init__(self):
-        headers = {'User-Agent':'My User Agent 1.0'}
-        res = requests.get("https://upload.wikimedia.org/wikipedia/ko/2/24/Lenna.png", headers=headers)
-        lenna = Image.open(BytesIO(res.content))
-        self.lenna = np.array(lenna)
-        self.createOption()
-
-    def __str__(self):
-        return ""
-
-    def preprocess(self):
-
-        pass
-
-    def new_model(self, fname) -> object:
-        cv2.imread('./data/' + fname)
-        return img
-
-    def createOption(self):
         self.ADAPTIVE_THRESH_MEAN_C = 0
         self.ADAPTIVE_THRESH_GAUSSIAN_C = 1
         self.THRESH_BINARY = 2
         self.THRESH_BINARY_INV = 3
+        headers = {'User-Agent': 'My User Agent 1.0'}
+        res = requests.get("https://upload.wikimedia.org/wikipedia/ko/2/24/Lenna.png", headers=headers)
+        self.lenna = Image.open(BytesIO(res.content))
 
-    def imshow(self, img):
-        img = Image.fromarray(img)
-        plt.imshow(img)
-        plt.show()
+    def get(self):
+        return np.array(self.lenna)
 
-    def gray_scale(self, img):
-        dst = img[:, :, 0] * 0.114 + img[:, :, 1] * 0.587 + img[:, :, 2] * 0.229  # GRAYSCALE 변환 공식
-        return dst
+    def new_model(self, fname) -> object:
+        cv2.imread('./data/' + fname)
+        return img
 
     def canny(self, src):
         src = self.gaussian_filter(src)
         src = self.calc_gradient(src)
         src = self.non_maximum_suppression(src)
         src = self.edge_tracking(src)
-
-
-
-
 
     def calc_gradient(self):
         pass
@@ -215,7 +194,7 @@ class Canny(object):
                         pass
         return img
 
-def filter2D(self, src, kernel, delta=0):
+def filter2D(src, kernel, delta=0):
     # 가장자리 픽셀을 (커널의 길이 // 2) 만큼 늘리고 새로운 행렬에 저장
     halfX = kernel.shape[0] // 2
     halfY = kernel.shape[1] // 2
@@ -232,9 +211,16 @@ def filter2D(self, src, kernel, delta=0):
             dst[x, y] = (kernel * cornerPixel[x: x + kernel.shape[0], y: y + kernel.shape[1]]).sum() + delta
     return dst
 
+def gray_scale(img):
+    dst = img[:, :, 0] * 0.114 + img[:, :, 1] * 0.587 + img[:, :, 2] * 0.229  # GRAYSCALE 변환 공식
+    return dst
+def imshow(img):
+    img = Image.fromarray(img)
+    plt.imshow(img)
+    plt.show()
+
 if __name__ == '__main__':
-    lm = LennaModel()
-    img = lm.gray_scale(lm.lenna)
+    img = gray_scale(LennaModel().get())
     img = GaussianBlur(img, 1, 1).get()
     img = Canny(img, 50, 150).get()
-    lm.imshow(img)
+    imshow(img)

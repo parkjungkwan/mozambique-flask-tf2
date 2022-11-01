@@ -38,7 +38,7 @@ class LennaModel(object):
         return np.array(self.lenna)
 
     def new_model(self, fname) -> object:
-        cv2.imread('./data/' + fname)
+        img = cv2.imread('./data/' + fname)
         return img
 
     def canny(self, src):

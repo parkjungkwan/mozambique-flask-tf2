@@ -1,6 +1,6 @@
 import cv2
 
-from lena.models import LennaModel
+from lenna.models import LennaModel
 from titanic.models import TitanicModel
 from util.dataset import Dataset
 

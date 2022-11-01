@@ -1,6 +1,6 @@
 import cv2
 
-from lena.views import LennaController
+from lenna.views import LennaController
 from util.common import Common
 
 '''

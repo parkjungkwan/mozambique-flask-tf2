@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from PIL import Image
-from canny.models import ImageToNumberArray, GaussianBlur, Canny, image_read
+from canny.services import ImageToNumberArray, GaussianBlur, Canny, image_read
 import cv2 as cv
 import numpy as np
 class MenuController(object):

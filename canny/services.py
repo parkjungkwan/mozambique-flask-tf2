@@ -103,7 +103,7 @@ def Canny(src, lowThreshold,highThreshold):
                     pass
     return img
 
-def filter2D(src, kernel, delta=0): # 서브셋
+def filter2D(src, kernel, delta=0):
     # 가장자리 픽셀을 (커널의 길이 // 2) 만큼 늘리고 새로운 행렬에 저장
     halfX = kernel.shape[0] // 2
     halfY = kernel.shape[1] // 2
@@ -123,12 +123,10 @@ def filter2D(src, kernel, delta=0): # 서브셋
     '''
     람다식의 프로토타입
     def new_model(self, fname) -> object:
-        img = cv2.imread('./data/' + fname)
-        return img
+        return cv2.imread('./data/' + fname)
     '''
 def image_read(fname) -> object: # 전처리
     return (lambda x: cv.imread('./data/'+x))(fname)
-
 '''
 def gray_scale(img):
     dst = img[:, :, 0] * 0.114 + img[:, :, 1] * 0.587 + img[:, :, 2] * 0.229  # GRAYSCALE 변환 공식

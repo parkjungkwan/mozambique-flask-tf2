@@ -46,5 +46,22 @@ class MenuController(object):
         plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
         plt.show()
 
+    @staticmethod
+    def menu_4(*params):
+        print(params[0])
+        img = ImageToNumberArray(params[1])
+        edges = cv.Canny(img, 100, 200)
+        lines = cv.HoughLinesP(edges, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)
+        dst = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
+        if lines is not None:
+            for i in range(lines.shape[0]):
+                pt1 = (lines[i][0][0], lines[i][0][1])
+                pt2 = (lines[i][0][2], lines[i][0][3])
+                cv.line(dst, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
+        plt.subplot(121), plt.imshow(edges, cmap='gray')
+        plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+        plt.subplot(122), plt.imshow(dst, cmap='gray')
+        plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+        plt.show()
 
 

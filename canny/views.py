@@ -14,7 +14,7 @@ class MenuController(object):
         img = image_read(params[1])
         print(f'cv2 버전 {cv.__version__}')  # cv2 버전 4.6.0
         print(f' Shape is {img.shape}')
-        cv.imshow('Gray', img)
+        cv.imshow('Original', img)
         cv.waitKey(0)
         cv.destroyAllWindows()
 
@@ -24,8 +24,6 @@ class MenuController(object):
         arr = ImageToNumberArray(params[1])
         # 람다식 내부에서 GRAYSCALE 변환 공식 사용함
         img = (lambda x: x[:, :, 0] * 0.114 + x[:, :, 1] * 0.587 + x[:, :, 2] * 0.229)(arr)
-        img = GaussianBlur(img, 1, 1)
-        img = Canny(img, 50, 150)
         plt.imshow((lambda x: Image.fromarray(x))(img))
         plt.show()
 
@@ -39,6 +37,8 @@ class MenuController(object):
         ### 메모리에서 읽는 경우 ###
         img = ImageToNumberArray(params[1])
         print(f'img type : {type(img)}')
+        # img = GaussianBlur(img, 1, 1) cv.Canny() 를 사용하지 않는 경우 필요
+        # img = Canny(img, 50, 150) cv.Canny() 를 사용하지 않는 경우 필요
         edges = cv.Canny(np.array(img), 100, 200)
         plt.subplot(121), plt.imshow(img, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])

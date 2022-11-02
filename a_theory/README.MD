@@ -40,6 +40,16 @@
 ### 이진화
 ###### 전역 임계치 결정
 ###### 적응적 임계치 결정
+### 영상처리
+###### HoG(Histogram of Oriented Gradient) 서술자
+###### blob(Binary Large Object)
+###### LoG(Laplacian of Gaussian)
+###### DoG(Difference of Gaussians)
+###### SIFT(Scale-Invariant Feature Transform)
+###### 동차좌표
+###### k-d 트리
+###### RANSAC(RANdom SAmple Consensus)
+
 
 
 

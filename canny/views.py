@@ -58,7 +58,7 @@ class MenuController(object):
                 pt1 = (lines[i][0][0], lines[i][0][1])
                 pt2 = (lines[i][0][2], lines[i][0][3])
                 cv.line(dst, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
-        plt.subplot(121), plt.imshow(edges, cmap='gray')
+        plt.subplot(121), plt.imshow(img, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])
         plt.subplot(122), plt.imshow(dst, cmap='gray')
         plt.title('Edge Image'), plt.xticks([]), plt.yticks([])

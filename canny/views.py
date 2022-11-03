@@ -70,28 +70,43 @@ class MenuController(object):
         plt.show()
 
     @staticmethod
-    def menu_5(*params):
+    def menu_5(*param):
+        print(param[0])
         ds = Dataset()
-        print(params[0])
-        # 모델 불러오기
-        haar = cv.CascadeClassifier(f"{ds.context}{params[1]}")
-        girl = params[2]
-        # girl = cv.cvtColor(image_read(girl), cv.COLOR_BGR2RGB)
-        #
-        girl = cv.imread(f'{ds.context}{girl}')
-        face = haar.detectMultiScale(girl, minSize=(150,150))
-        if len(face) == 0:
+        haar = cv.CascadeClassifier(f"{ds.context}{param[1]} ")
+        girl = param[2]
+        girl_original = cv.cvtColor(image_read(girl), cv.COLOR_BGR2RGB)
+        girl_gray = (lambda x: x[:, :, 0] * 0.114 + x[:, :, 1] * 0.587 + x[:, :, 2] * 0.229)(girl_original)
+        girl_canny = cv.Canny(np.array(girl_original), 10, 100)
+        lines = cv.HoughLinesP(girl_canny, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)
+        girl_hough = cv.cvtColor(girl_canny, cv.COLOR_GRAY2BGR)
+        girl_haar = haar.detectMultiScale(girl_original, minSize=(150, 150))
+
+        plt.subplot(151), plt.imshow(girl_original, cmap='gray')
+        plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+
+        if len(girl_haar) == 0:
             print("얼굴인식 실패")
             quit()
-        for(x,y,w,h) in face:
+        for (x, y, w, h,) in girl_haar:
             print(f'얼굴의 좌표 : {x},{y},{w},{h}')
-            red = (0, 0, 255)
-            cv.rectangle(girl, (x,y), (x+w, y+h), red, thickness=20)
-        girl = cv.resize(girl, (300, 300))
-        cv.imwrite(f'{ds.context}girl-face.png', girl)
-        cv.imshow('GIRL FACE', girl)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
+            red = (255, 0, 0)
+            cv.rectangle(girl_original, (x, y), (x + w, y + h), red, thickness=20)
+        if lines is not None:
+            for i in range(lines.shape[0]):
+                pt1 = (lines[i][0][0], lines[i][0][1])
+                pt2 = (lines[i][0][2], lines[i][0][3])
+                cv.line(girl_hough, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
+
+        plt.subplot(152), plt.imshow(girl_gray, cmap='gray')
+        plt.title('Gray Image'), plt.xticks([]), plt.yticks([])
+        plt.subplot(153), plt.imshow(girl_canny, cmap='gray')
+        plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+        plt.subplot(154), plt.imshow(girl_hough, cmap='gray')
+        plt.title('Hough Image'), plt.xticks([]), plt.yticks([])
+        plt.subplot(155), plt.imshow(girl_original, cmap='gray')
+        plt.title('HAAR Image'), plt.xticks([]), plt.yticks([])
+        plt.show()
 
 
 

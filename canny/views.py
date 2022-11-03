@@ -15,7 +15,7 @@ class MenuController(object):
     @staticmethod
     def menu_1(*params):
         print(params[0])
-        img = ExecuteLambda('IMAGE_READ', params[1])
+        img = ExecuteLambda('IMAGE_READ_FOR_CV', params[1])
         print(f'cv2 버전 {cv.__version__}')  # cv2 버전 4.6.0
         print(f' Shape is {img.shape}')
         cv.imshow('Original', img)
@@ -74,7 +74,7 @@ class MenuController(object):
         ds = Dataset()
         haar = cv.CascadeClassifier(f"{ds.context}{param[1]} ")
         girl = param[2]
-        girl_original = cv.cvtColor(ExecuteLambda('IMAGE_READ',girl), cv.COLOR_BGR2RGB)
+        girl_original = ExecuteLambda('IMAGE_READ_FOR_PLT', girl)
         girl_gray = ExecuteLambda('GRAY_SCALE', girl_original)
         girl_canny = cv.Canny(np.array(girl_original), 10, 100)
         lines = cv.HoughLinesP(girl_canny, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)

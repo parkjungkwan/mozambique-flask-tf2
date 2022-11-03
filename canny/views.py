@@ -1,6 +1,5 @@
 from matplotlib import pyplot as plt
-from PIL import Image
-from canny.services import ImageToNumberArray, image_read
+from canny.services import ImageToNumberArray, ExecuteLambda
 import cv2 as cv
 import numpy as np
 
@@ -16,7 +15,7 @@ class MenuController(object):
     @staticmethod
     def menu_1(*params):
         print(params[0])
-        img = image_read(params[1])
+        img = ExecuteLambda('IMAGE_READ', params[1])
         print(f'cv2 버전 {cv.__version__}')  # cv2 버전 4.6.0
         print(f' Shape is {img.shape}')
         cv.imshow('Original', img)
@@ -27,9 +26,9 @@ class MenuController(object):
     def menu_2(*params):
         print(params[0])
         arr = ImageToNumberArray(params[1])
-        # 람다식 내부에서 GRAYSCALE 변환 공식 사용함
-        img = (lambda x: x[:, :, 0] * 0.114 + x[:, :, 1] * 0.587 + x[:, :, 2] * 0.229)(arr)
-        plt.imshow((lambda x: Image.fromarray(x))(img))
+
+        img = ExecuteLambda('GRAY_SCALE', arr)
+        plt.imshow(ExecuteLambda('IMAGE_FROM_ARRAY', img))
         plt.show()
 
 
@@ -75,8 +74,8 @@ class MenuController(object):
         ds = Dataset()
         haar = cv.CascadeClassifier(f"{ds.context}{param[1]} ")
         girl = param[2]
-        girl_original = cv.cvtColor(image_read(girl), cv.COLOR_BGR2RGB)
-        girl_gray = (lambda x: x[:, :, 0] * 0.114 + x[:, :, 1] * 0.587 + x[:, :, 2] * 0.229)(girl_original)
+        girl_original = cv.cvtColor(ExecuteLambda('IMAGE_READ',girl), cv.COLOR_BGR2RGB)
+        girl_gray = ExecuteLambda('GRAY_SCALE', girl_original)
         girl_canny = cv.Canny(np.array(girl_original), 10, 100)
         lines = cv.HoughLinesP(girl_canny, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)
         girl_hough = cv.cvtColor(girl_canny, cv.COLOR_GRAY2BGR)
@@ -107,6 +106,10 @@ class MenuController(object):
         plt.subplot(155), plt.imshow(girl_original, cmap='gray')
         plt.title('HAAR Image'), plt.xticks([]), plt.yticks([])
         plt.show()
+
+    @staticmethod
+    def menu_6(*param):
+        pass
 
 
 

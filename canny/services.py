@@ -125,8 +125,21 @@ def filter2D(src, kernel, delta=0):
     def new_model(self, fname) -> object:
         return cv2.imread('./data/' + fname)
     '''
-def image_read(fname) -> object: # 전처리
-    return (lambda x: cv.imread('./data/'+x))(fname)
+
+def ExecuteLambda(*params):
+    cmd = params[0]
+    target = params[1]
+    if cmd == 'IMAGE_READ':
+        return (lambda x: cv.imread('./data/'+x))(target)
+    elif cmd == 'GRAY_SCALE': # GRAYSCALE 변환 공식
+        return (lambda x: x[:, :, 0] * 0.114 + x[:, :, 1] * 0.587 + x[:, :, 2] * 0.229)(target)
+    elif cmd == 'IMAGE_FROM_ARRAY':
+        return (lambda x: Image.fromarray(x))(target)
+
+
+
+
+
 '''
 def gray_scale(img):
     dst = img[:, :, 0] * 0.114 + img[:, :, 1] * 0.587 + img[:, :, 2] * 0.229  # GRAYSCALE 변환 공식

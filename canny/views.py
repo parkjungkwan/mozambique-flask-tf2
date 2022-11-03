@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from canny.services import ImageToNumberArray, ExecuteLambda
+from canny.services import ImageToNumberArray, ExecuteLambda, Hough, Haar
 import cv2 as cv
 import numpy as np
 
@@ -26,7 +26,6 @@ class MenuController(object):
     def menu_2(*params):
         print(params[0])
         arr = ImageToNumberArray(params[1])
-
         img = ExecuteLambda('GRAY_SCALE', arr)
         plt.imshow(ExecuteLambda('IMAGE_FROM_ARRAY', img))
         plt.show()
@@ -54,14 +53,8 @@ class MenuController(object):
     def menu_4(*params):
         print(params[0])
         img = ImageToNumberArray(params[1])
-        edges = cv.Canny(img, 100, 200)
-        lines = cv.HoughLinesP(edges, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)
-        dst = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
-        if lines is not None:
-            for i in range(lines.shape[0]):
-                pt1 = (lines[i][0][0], lines[i][0][1])
-                pt2 = (lines[i][0][2], lines[i][0][3])
-                cv.line(dst, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
+        edges = cv.Canny(img, 100, 200) # (image, threshold 1=100, threshold 2=200)
+        dst = Hough(edges)
         plt.subplot(121), plt.imshow(img, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])
         plt.subplot(122), plt.imshow(dst, cmap='gray')
@@ -71,8 +64,7 @@ class MenuController(object):
     @staticmethod
     def menu_5(*param):
         print(param[0])
-        ds = Dataset()
-        haar = cv.CascadeClassifier(f"{ds.context}{param[1]} ")
+        haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]} ")
         girl = param[2]
         girl_original = ExecuteLambda('IMAGE_READ_FOR_PLT', girl)
         girl_gray = ExecuteLambda('GRAY_SCALE', girl_original)
@@ -84,18 +76,7 @@ class MenuController(object):
         plt.subplot(151), plt.imshow(girl_original, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])
 
-        if len(girl_haar) == 0:
-            print("얼굴인식 실패")
-            quit()
-        for (x, y, w, h,) in girl_haar:
-            print(f'얼굴의 좌표 : {x},{y},{w},{h}')
-            red = (255, 0, 0)
-            cv.rectangle(girl_original, (x, y), (x + w, y + h), red, thickness=20)
-        if lines is not None:
-            for i in range(lines.shape[0]):
-                pt1 = (lines[i][0][0], lines[i][0][1])
-                pt2 = (lines[i][0][2], lines[i][0][3])
-                cv.line(girl_hough, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
+        Haar(girl_haar, girl_hough, girl_original, lines)
 
         plt.subplot(152), plt.imshow(girl_gray, cmap='gray')
         plt.title('Gray Image'), plt.xticks([]), plt.yticks([])
@@ -106,6 +87,9 @@ class MenuController(object):
         plt.subplot(155), plt.imshow(girl_original, cmap='gray')
         plt.title('HAAR Image'), plt.xticks([]), plt.yticks([])
         plt.show()
+
+
+
 
     @staticmethod
     def menu_6(*param):

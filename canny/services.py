@@ -5,6 +5,10 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from const.crawler import HEADERS
 import cv2 as cv
+
+from util.dataset import Dataset
+
+
 def ImageToNumberArray(url):
     # URL = "https://upload.wikimedia.org/wikipedia/ko/2/24/Lenna.png"
     res = requests.get(url, headers=HEADERS)
@@ -103,6 +107,32 @@ def Canny(src, lowThreshold,highThreshold):
                     pass
     return img
 
+def Hough(edges):
+    lines = cv.HoughLinesP(edges, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)
+    dst = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
+    if lines is not None:
+        for i in range(lines.shape[0]):
+            pt1 = (lines[i][0][0], lines[i][0][1])
+            pt2 = (lines[i][0][2], lines[i][0][3])
+            cv.line(dst, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
+    return dst
+def Haar(*params):
+    girl_haar = params[0]
+    girl_hough = params[1]
+    girl_original = params[2]
+    lines = params[3]
+    if len(girl_haar) == 0:
+        print("얼굴인식 실패")
+        quit()
+    for (x, y, w, h,) in girl_haar:
+        print(f'얼굴의 좌표 : {x},{y},{w},{h}')
+        red = (255, 0, 0)
+        cv.rectangle(girl_original, (x, y), (x + w, y + h), red, thickness=20)
+    if lines is not None:
+        for i in range(lines.shape[0]):
+            pt1 = (lines[i][0][0], lines[i][0][1])
+            pt2 = (lines[i][0][2], lines[i][0][3])
+            cv.line(girl_hough, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
 def filter2D(src, kernel, delta=0):
     # 가장자리 픽셀을 (커널의 길이 // 2) 만큼 늘리고 새로운 행렬에 저장
     halfX = kernel.shape[0] // 2
@@ -129,10 +159,11 @@ def filter2D(src, kernel, delta=0):
 def ExecuteLambda(*params):
     cmd = params[0]
     target = params[1]
+    ds = Dataset()
     if cmd == 'IMAGE_READ_FOR_CV':
-        return (lambda x: cv.imread('./data/'+x))(target)
+        return (lambda x: cv.imread(f'{ds.context}{x}'))(target)
     elif cmd == 'IMAGE_READ_FOR_PLT':
-        return cv.cvtColor((lambda x: cv.imread('./data/'+x))(target), cv.COLOR_BGR2RGB)
+        return cv.cvtColor((lambda x: cv.imread(f'{ds.context}{x}'))(target), cv.COLOR_BGR2RGB)
     elif cmd == 'GRAY_SCALE': # GRAYSCALE 변환 공식
         return (lambda x: x[:, :, 0] * 0.114 + x[:, :, 1] * 0.587 + x[:, :, 2] * 0.229)(target)
     elif cmd == 'IMAGE_FROM_ARRAY':

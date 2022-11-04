@@ -1,10 +1,9 @@
 from matplotlib import pyplot as plt
-from canny.services import ImageToNumberArray, ExecuteLambda, Hough, Haar
+from mosaic.services import ImageToNumberArray, Hough, Haar
+from util.lambdas import MosaicLambda
 import cv2 as cv
 import numpy as np
-
 from util.dataset import Dataset
-
 
 class MenuController(object):
 
@@ -15,7 +14,7 @@ class MenuController(object):
     @staticmethod
     def menu_1(*params):
         print(params[0])
-        img = ExecuteLambda('IMAGE_READ_FOR_CV', params[1])
+        img = MosaicLambda('IMAGE_READ_FOR_CV', params[1])
         print(f'cv2 버전 {cv.__version__}')  # cv2 버전 4.6.0
         print(f' Shape is {img.shape}')
         cv.imshow('Original', img)
@@ -26,8 +25,8 @@ class MenuController(object):
     def menu_2(*params):
         print(params[0])
         arr = ImageToNumberArray(params[1])
-        img = ExecuteLambda('GRAY_SCALE', arr)
-        plt.imshow(ExecuteLambda('IMAGE_FROM_ARRAY', img))
+        img = MosaicLambda('GRAY_SCALE', arr)
+        plt.imshow(MosaicLambda('IMAGE_FROM_ARRAY', img))
         plt.show()
 
 
@@ -64,20 +63,27 @@ class MenuController(object):
     @staticmethod
     def menu_5(*param):
         print(param[0])
+        cat = cv.imread(f"{Dataset().context}{param[1]}")
+        mos = MenuController.mosaic(cat, (150, 150, 450, 450), 10)
+        cv.imwrite(f'{Dataset().context}cat-mosaic.png', mos)
+        cv.imshow('CAT MOSAIC', mos)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+
+    @staticmethod
+    def menu_6(*param):
+        print(param[0])
         haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]}")
         girl = param[2]
-        girl_original = ExecuteLambda('IMAGE_READ_FOR_PLT', girl)
-        girl_gray = ExecuteLambda('GRAY_SCALE', girl_original)
-        girl_canny = cv.Canny(np.array(girl_original), 10, 100)
-        lines = cv.HoughLinesP(girl_canny, 1, np.pi / 180., 120, minLineLength=50, maxLineGap=5)
-        girl_hough = cv.cvtColor(girl_canny, cv.COLOR_GRAY2BGR)
+        girl_original = MosaicLambda('IMAGE_READ_FOR_PLT', girl)
+        girl_gray = MosaicLambda('GRAY_SCALE', girl_original)
+        girl_canny = cv.Canny(np.array(girl_original), 50, 51) # 최소/최대 임계치
+        girl_hough = Hough(girl_canny)
         girl_haar = haar.detectMultiScale(girl_original, minSize=(150, 150))
+        Haar(girl_haar, girl_original)
 
         plt.subplot(151), plt.imshow(girl_original, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-
-        Haar(girl_haar, girl_hough, girl_original, lines)
-
         plt.subplot(152), plt.imshow(girl_gray, cmap='gray')
         plt.title('Gray Image'), plt.xticks([]), plt.yticks([])
         plt.subplot(153), plt.imshow(girl_canny, cmap='gray')
@@ -89,16 +95,10 @@ class MenuController(object):
         plt.show()
 
     @staticmethod
-    def menu_6(*param):
-        print(param[0])
-        cat = cv.imread(f"{Dataset().context}{param[1]}")
-        mos = MenuController.mosaic(cat, (150, 150, 450, 450), 10)
-        cv.imwrite(f'{Dataset().context}cat-mosaic.png', mos)
-        cv.imshow('CAT MOSAIC', mos)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
+    def menu_7(*param):
+        pass
 
-    @staticmethod
+
     def mosaic(img, rect, size):
         (x1, y1, x2, y2) = rect
         w = x2 - x1

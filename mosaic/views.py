@@ -4,7 +4,7 @@ from util.lambdas import MosaicLambda
 import cv2 as cv
 import numpy as np
 from util.dataset import Dataset
-
+import copy
 class MenuController(object):
 
     @staticmethod
@@ -76,22 +76,22 @@ class MenuController(object):
         haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]}")
         girl = param[2]
         girl_original = MosaicLambda('IMAGE_READ_FOR_PLT', girl)
+        girl_clone = copy.deepcopy(girl_original)
         girl_gray = MosaicLambda('GRAY_SCALE', girl_original)
         girl_canny = cv.Canny(np.array(girl_original), 50, 51) # 최소/최대 임계치
         girl_hough = Hough(girl_canny)
         girl_haar = haar.detectMultiScale(girl_original, minSize=(150, 150))
-        Haar(girl_haar, girl_original)
-
+        Haar(girl_haar, girl_clone)
         plt.subplot(151), plt.imshow(girl_original, cmap='gray')
-        plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+        plt.title('Original'), plt.xticks([]), plt.yticks([])
         plt.subplot(152), plt.imshow(girl_gray, cmap='gray')
-        plt.title('Gray Image'), plt.xticks([]), plt.yticks([])
+        plt.title('Gray'), plt.xticks([]), plt.yticks([])
         plt.subplot(153), plt.imshow(girl_canny, cmap='gray')
-        plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+        plt.title('Edge'), plt.xticks([]), plt.yticks([])
         plt.subplot(154), plt.imshow(girl_hough, cmap='gray')
-        plt.title('Hough Image'), plt.xticks([]), plt.yticks([])
-        plt.subplot(155), plt.imshow(girl_original, cmap='gray')
-        plt.title('HAAR Image'), plt.xticks([]), plt.yticks([])
+        plt.title('Hough'), plt.xticks([]), plt.yticks([])
+        plt.subplot(155), plt.imshow(girl_clone, cmap='gray')
+        plt.title('HAAR'), plt.xticks([]), plt.yticks([])
         plt.show()
 
     @staticmethod

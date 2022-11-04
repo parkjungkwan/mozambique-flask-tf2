@@ -64,7 +64,7 @@ class MenuController(object):
     @staticmethod
     def menu_5(*param):
         print(param[0])
-        haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]} ")
+        haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]}")
         girl = param[2]
         girl_original = ExecuteLambda('IMAGE_READ_FOR_PLT', girl)
         girl_gray = ExecuteLambda('GRAY_SCALE', girl_original)
@@ -88,12 +88,29 @@ class MenuController(object):
         plt.title('HAAR Image'), plt.xticks([]), plt.yticks([])
         plt.show()
 
-
-
-
     @staticmethod
     def menu_6(*param):
-        pass
+        print(param[0])
+        cat = cv.imread(f"{Dataset().context}{param[1]}")
+        mos = MenuController.mosaic(cat, (150, 150, 450, 450), 10)
+        cv.imwrite(f'{Dataset().context}cat-mosaic.png', mos)
+        cv.imshow('CAT MOSAIC', mos)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+
+    @staticmethod
+    def mosaic(img, rect, size):
+        (x1, y1, x2, y2) = rect
+        w = x2 - x1
+        h = y2 - y1
+        i_rect = img[y1:y2, x1:x2]
+        i_small = cv.resize(i_rect, (size, size))
+        i_mos = cv.resize(i_small, (w, h), interpolation=cv.INTER_AREA)
+        img2 = img.copy()
+        img2[y1:y2, x1:x2] = i_mos
+        return img2
+
+
 
 
 

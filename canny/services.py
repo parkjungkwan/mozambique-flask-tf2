@@ -133,6 +133,7 @@ def Haar(*params):
             pt1 = (lines[i][0][0], lines[i][0][1])
             pt2 = (lines[i][0][2], lines[i][0][3])
             cv.line(girl_hough, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
+
 def filter2D(src, kernel, delta=0):
     # 가장자리 픽셀을 (커널의 길이 // 2) 만큼 늘리고 새로운 행렬에 저장
     halfX = kernel.shape[0] // 2

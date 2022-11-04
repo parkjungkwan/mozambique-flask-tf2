@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from mosaic.services import ImageToNumberArray, Hough, Haar
+from mosaic.services import ImageToNumberArray, Hough, Haar, mosaic
 from util.lambdas import MosaicLambda
 import cv2 as cv
 import numpy as np
@@ -64,7 +64,7 @@ class MenuController(object):
     def menu_5(*param):
         print(param[0])
         cat = cv.imread(f"{Dataset().context}{param[1]}")
-        mos = MenuController.mosaic(cat, (150, 150, 450, 450), 10)
+        mos = mosaic(cat, (150, 150, 450, 450), 10)
         cv.imwrite(f'{Dataset().context}cat-mosaic.png', mos)
         cv.imshow('CAT MOSAIC', mos)
         cv.waitKey(0)
@@ -73,25 +73,27 @@ class MenuController(object):
     @staticmethod
     def menu_6(*param):
         print(param[0])
-        haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]}")
         girl = param[2]
         girl_original = MosaicLambda('IMAGE_READ_FOR_PLT', girl)
-        girl_clone = copy.deepcopy(girl_original)
         girl_gray = MosaicLambda('GRAY_SCALE', girl_original)
         girl_canny = cv.Canny(np.array(girl_original), 50, 51) # 최소/최대 임계치
         girl_hough = Hough(girl_canny)
-        girl_haar = haar.detectMultiScale(girl_original, minSize=(150, 150))
-        Haar(girl_haar, girl_clone)
-        plt.subplot(151), plt.imshow(girl_original, cmap='gray')
+        girl_clone = copy.deepcopy(girl_original)
+        haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]}")
+        rect = Haar(haar, girl_clone)
+        girl_mosaic = mosaic(girl_original, rect, 10)
+        plt.subplot(161), plt.imshow(girl_original, cmap='gray')
         plt.title('Original'), plt.xticks([]), plt.yticks([])
-        plt.subplot(152), plt.imshow(girl_gray, cmap='gray')
+        plt.subplot(162), plt.imshow(girl_gray, cmap='gray')
         plt.title('Gray'), plt.xticks([]), plt.yticks([])
-        plt.subplot(153), plt.imshow(girl_canny, cmap='gray')
+        plt.subplot(163), plt.imshow(girl_canny, cmap='gray')
         plt.title('Edge'), plt.xticks([]), plt.yticks([])
-        plt.subplot(154), plt.imshow(girl_hough, cmap='gray')
+        plt.subplot(164), plt.imshow(girl_hough, cmap='gray')
         plt.title('Hough'), plt.xticks([]), plt.yticks([])
-        plt.subplot(155), plt.imshow(girl_clone, cmap='gray')
+        plt.subplot(165), plt.imshow(girl_clone, cmap='gray')
         plt.title('HAAR'), plt.xticks([]), plt.yticks([])
+        plt.subplot(166), plt.imshow(girl_mosaic, cmap='gray')
+        plt.title('MOSAIC'), plt.xticks([]), plt.yticks([])
         plt.show()
 
     @staticmethod
@@ -99,16 +101,7 @@ class MenuController(object):
         pass
 
 
-    def mosaic(img, rect, size):
-        (x1, y1, x2, y2) = rect
-        w = x2 - x1
-        h = y2 - y1
-        i_rect = img[y1:y2, x1:x2]
-        i_small = cv.resize(i_rect, (size, size))
-        i_mos = cv.resize(i_small, (w, h), interpolation=cv.INTER_AREA)
-        img2 = img.copy()
-        img2[y1:y2, x1:x2] = i_mos
-        return img2
+
 
 
 

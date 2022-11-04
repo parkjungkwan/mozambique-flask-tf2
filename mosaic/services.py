@@ -25,8 +25,9 @@ def Hough(edges):
             cv.line(dst, pt1, pt2, (255, 0, 0), 2, cv.LINE_AA)
     return dst
 def Haar(*params):
-    girl_haar = params[0]
+    haar = params[0]
     girl_original = params[1]
+    girl_haar = haar.detectMultiScale(girl_original, minSize=(150, 150))
     if len(girl_haar) == 0:
         print("얼굴인식 실패")
         quit()
@@ -34,6 +35,8 @@ def Haar(*params):
         print(f'얼굴의 좌표 : {x},{y},{w},{h}')
         cv.rectangle(girl_original, (x, y), (x + w, y + h),
                      (255, 0, 0), thickness=20)  # RED(255, 0, 0) in RGB
+
+    return (x, y, x+w, y+h)
 
 def mosaic(img, rect, size):
     (x1, y1, x2, y2) = rect

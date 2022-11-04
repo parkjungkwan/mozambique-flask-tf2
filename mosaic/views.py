@@ -1,9 +1,10 @@
 from matplotlib import pyplot as plt
-from mosaic.services import ImageToNumberArray, Hough, Haar, mosaic
+
+from const.path import CTX
+from mosaic.services import ImageToNumberArray, Hough, Haar, mosaic, Canny, mosaics
 from util.lambdas import MosaicLambda
 import cv2 as cv
 import numpy as np
-from util.dataset import Dataset
 import copy
 class MenuController(object):
 
@@ -63,24 +64,23 @@ class MenuController(object):
     @staticmethod
     def menu_5(*param):
         print(param[0])
-        cat = cv.imread(f"{Dataset().context}{param[1]}")
+        cat = cv.imread(CTX+param[1])
         mos = mosaic(cat, (150, 150, 450, 450), 10)
-        cv.imwrite(f'{Dataset().context}cat-mosaic.png', mos)
+        cv.imwrite(CTX+cat-mosaic.png, mos)
         cv.imshow('CAT MOSAIC', mos)
         cv.waitKey(0)
         cv.destroyAllWindows()
 
     @staticmethod
-    def menu_6(*param):
-        print(param[0])
-        girl = param[2]
-        girl_original = MosaicLambda('IMAGE_READ_FOR_PLT', girl)
+    def menu_6(*params):
+        print(params[0])
+        param = params[1] # girl.jpg
+        girl_original = MosaicLambda('IMAGE_READ_FOR_PLT', param)
         girl_gray = MosaicLambda('GRAY_SCALE', girl_original)
-        girl_canny = cv.Canny(np.array(girl_original), 50, 51) # 최소/최대 임계치
+        girl_canny = Canny(girl_original)
         girl_hough = Hough(girl_canny)
         girl_clone = copy.deepcopy(girl_original)
-        haar = cv.CascadeClassifier(f"{Dataset().context}{param[1]}")
-        rect = Haar(haar, girl_clone)
+        rect = Haar(girl_clone)
         girl_mosaic = mosaic(girl_original, rect, 10)
         plt.subplot(161), plt.imshow(girl_original, cmap='gray')
         plt.title('Original'), plt.xticks([]), plt.yticks([])
@@ -97,8 +97,16 @@ class MenuController(object):
         plt.show()
 
     @staticmethod
-    def menu_7(*param):
-        pass
+    def menu_7(*params):
+        print(params[0])
+        girl_with_mom = MosaicLambda('IMAGE_READ_FOR_CV', params[1])
+        girl_with_mom = cv.cvtColor(girl_with_mom, cv.COLOR_BGR2RGB)
+        mos = mosaics(girl_with_mom, 10)
+        plt.subplot(121), plt.imshow(girl_with_mom, cmap='gray')
+        plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+        plt.subplot(122), plt.imshow(mos, cmap='gray')
+        plt.title('Mosaic Image'), plt.xticks([]), plt.yticks([])
+        plt.show()
 
 
 

@@ -3,7 +3,7 @@ from util.common import Common
 LENNA = "Lenna.png"
 SOCCER = "https://docs.opencv.org/4.x/roi.jpg"
 BUILDING="http://amroamroamro.github.io/mexopencv/opencv_contrib/fast_hough_transform_demo_01.png"
-HAAR = "haarcascade_frontalface_alt.xml" # 가중치 파일
+
 GIRL = "girl.jpg"
 GIRL_INCLINED = "girl_incliend.png"
 GIRL_SIDE_FACE = "girl_side_face.jpg"
@@ -26,7 +26,7 @@ if __name__ == '__main__':
         elif menu == "3": api.menu_3(menus[3],SOCCER)
         elif menu == "4": api.menu_4(menus[4],BUILDING)
         elif menu == "5": api.menu_5(menus[5],CAT)
-        elif menu == "6": api.menu_6(menus[6],HAAR,GIRL)
-        elif menu == "7": api.menu_7(menus[7])
+        elif menu == "6": api.menu_6(menus[6],GIRL)
+        elif menu == "7": api.menu_7(menus[7],GIRL_WITH_MOM)
         else:
             print(" ### 해당 메뉴 없음 ### ")

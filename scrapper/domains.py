@@ -37,9 +37,9 @@ class MusicRanking:
     tag_name : str
     fname : str
     class_names : []
-    artists : list
-    titles : list
-    dic : dict
+    artists : []
+    titles : []
+    diction : {}
     df : None
     soup : BeautifulSoup
 
@@ -100,9 +100,9 @@ class MusicRanking:
     def titles(self, titles): self._titles = titles
 
     @property
-    def dic(self): return self._dic
-    @dic.setter
-    def dic(self, dic): self._dic = dic
+    def diction(self): return self._diction
+    @diction.setter
+    def diction(self, diction): self._diction = diction
 
     @property
     def df(self): return self._df
@@ -110,10 +110,14 @@ class MusicRanking:
     def df(self, df): self._df = df
 
     def dict_to_dataframe(self):
-        self.df = pd.DataFrame.from_dict(self.dic, orient='index')
+        print("^" * 10)
+        print(len(self.diction))
+        self.df = pd.DataFrame.from_dict(self.diction, orient='index')
+        print("*"*10)
+        print(self.df)
 
     def dataframe_to_csv(self):
-        path = CTX+self.fname+'.csv'
+        path = './save/result.csv'
         self.df.to_csv(path, sep=',', na_rep="NaN")
 
 

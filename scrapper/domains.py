@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import pandas as pd
 from bs4 import BeautifulSoup
-from const.path import CTX
 
 """
 지원하는 Parser 종류
@@ -28,7 +27,7 @@ class Melon:
     pass
 """
 @dataclass
-class MusicRanking:
+class Scrap:
     html : str
     parser : str
     domain : str
@@ -110,15 +109,12 @@ class MusicRanking:
     def df(self, df): self._df = df
 
     def dict_to_dataframe(self):
-        print("^" * 10)
         print(len(self.diction))
         self.df = pd.DataFrame.from_dict(self.diction, orient='index')
-        print("*"*10)
-        print(self.df)
 
     def dataframe_to_csv(self):
         path = './save/result.csv'
-        self.df.to_csv(path, sep=',', na_rep="NaN")
+        self.df.to_csv(path, sep=',', na_rep="NaN", header=None)
 
 
 

@@ -1,6 +1,37 @@
 import numpy as np
 import pandas as pd
+'''
+Data columns (total 12 columns):
+ #   Column        Non-Null Count  Dtype  
+---  ------        --------------  -----  
+ 0   Unnamed: 0    234 non-null    int64  
+ 1   manufacturer : 회사  234 non-null    object 
+ 2   model : 모델        234 non-null    object 
+ 3   displ : 배기량         234 non-null    float64
+ 4   year : 연식         234 non-null    int64  
+ 5   cyl : 실린더          234 non-null    int64  
+ 6   trans : 차축        234 non-null    object 
+ 7   drv : 오토          234 non-null    object 
+ 8   cty : 시내연비          234 non-null    int64  
+ 9   hwy : 시외연비          234 non-null    int64  
+ 10  fl : 연료            234 non-null    object 
+ 11  class : 차종         234 non-null    object 
+dtypes: float64(1), int64(5), object(6)
 
+'''
+my_meta = {
+    "manufacturer": "회사",
+    "model": "모델",
+    "displ": "배기량",
+    "year": "연식",
+    "cyl": "실린더",
+    "trans": "차축",
+    "drv": "오토",
+    "cty": "시내연비",
+    "hwy": "시외연비",
+    "fl": "연료",
+    "class": "차종"
+}
 def my_menu(ls):
     print(f'type is {type(ls)}')
     for i, j in enumerate(ls):
@@ -37,7 +68,7 @@ class Mpg:
 
     def __init__(self):
         self.mpg = pd.read_csv('./data/mpg.csv')
-        self.mpg_add_test = None
+        self.my_mpg = None
 
     def head(self):
         print(self.mpg.head(3))
@@ -58,20 +89,20 @@ class Mpg:
         print(self.mpg.describe(include ='all'))
     # "","manufacturer","model","displ","year",
     # "cyl","trans","drv","cty","hwy","fl","class"
-    def change_manufacturer_to_company(self):
-        self.mpg_add_test = self.mpg.rename(columns={"manufacturer":"company"})
+    def change_meta(self):
+        self.my_mpg = self.mpg.rename(columns=my_meta)
     def create_test_variable(self): # No.8
-        self.change_manufacturer_to_company()
-        t = self.mpg_add_test
+        self.change_meta()
+        t = self.my_mpg
         t['total'] = (t['cty'] + t['hwy'])/2
         t['test'] = np.where(t['total']>=20, 'pass', 'fail')
-        self.mpg_add_test = t
-        # print(self.mpg_add_test.columns)
-        # print(self.mpg_add_test.head())
+        self.my_mpg = t
+        print(self.my_mpg.columns)
+        print(self.my_mpg.head())
 
     def create_test_frequency(self): # No.9
         self.create_test_variable()
-        t = self.mpg_add_test
+        t = self.my_mpg
         count_test = t['test'].value_counts()
         print(count_test)
 

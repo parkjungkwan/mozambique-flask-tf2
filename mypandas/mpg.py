@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+
 '''
 Data columns (total 12 columns):
  #   Column        Non-Null Count  Dtype  
@@ -69,6 +71,7 @@ class Mpg:
     def __init__(self):
         self.mpg = pd.read_csv('./data/mpg.csv')
         self.my_mpg = None
+        self.count_test = None
 
     def head(self):
         print(self.mpg.head(3))
@@ -94,8 +97,8 @@ class Mpg:
     def create_test_variable(self): # No.8
         self.change_meta()
         t = self.my_mpg
-        t['total'] = (t['cty'] + t['hwy'])/2
-        t['test'] = np.where(t['total']>=20, 'pass', 'fail')
+        t['총연비'] = (t['시내연비'] + t['시외연비'])/2
+        t['연비테스트'] = np.where(t['총연비']>=20, 'pass', 'fail')
         self.my_mpg = t
         print(self.my_mpg.columns)
         print(self.my_mpg.head())
@@ -103,11 +106,14 @@ class Mpg:
     def create_test_frequency(self): # No.9
         self.create_test_variable()
         t = self.my_mpg
-        count_test = t['test'].value_counts()
-        print(count_test)
+        self.count_test = t['연비테스트'].value_counts()
+        print(self.count_test)
 
-    def draw_freq_bar_graph(self):
-        pass
+
+    def draw_freq_bar_graph(self): # No.10
+        self.create_test_frequency()
+        self.count_test.plot.bar(rot=0)
+        plt.savefig('./save/draw_freq_bar_graph.png')
 
     def compare_displ_and_hwy(self):
         pass
@@ -168,8 +174,8 @@ if __name__ == '__main__':
             print("test 빈도 막대 그래프 그리기")
             t.draw_freq_bar_graph()
         elif menu == '11':
-            print("displ(배기량)이 4이하와 5이상 자동차의 hwy(고속도로 연비) 비교")
             # mpg 144페이지 문제
+            print("displ(배기량)이 4이하와 5이상 자동차의 hwy(고속도로 연비) 비교")
             t.compare_displ_and_hwy()
         elif menu == '12':
             print("아우디와 토요타 중 도시연비(cty) 평균이 높은 회사 검색")

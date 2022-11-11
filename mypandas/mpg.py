@@ -73,6 +73,7 @@ class Mpg:
         self.my_mpg = None
         self.count_test = None
 
+
     def head(self):
         print(self.mpg.head(3))
 
@@ -80,10 +81,11 @@ class Mpg:
         print(self.mpg.tail(3))
 
     def shape(self):
-        print(self.mpg.shape)
+        self.mpg.shape
 
     def info(self):
         print(self.mpg.info())
+        self.shape()
 
     def describe(self):
         print(self.mpg.describe())

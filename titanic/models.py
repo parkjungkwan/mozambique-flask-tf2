@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 from util.dataset import Dataset
-
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
 """
 ['PassengerId', 'Survived', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp',
         'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked']
@@ -105,6 +107,20 @@ class TitanicModel(object):
                 'Rare' : 6
             })
         return this
+
+    @staticmethod
+    def create_k_fold() -> object:
+        return KFold(n_splits=10, shuffle=True, random_state=0)
+
+    @staticmethod
+    def get_accuracy(this):
+        score = cross_val_score(RandomForestClassifier(),
+                                this.train,
+                                this.label,
+                                cv=TitanicModel.create_k_fold(),
+                                n_jobs=1,
+                                scoring='accuracy')
+        return round(np.mean(score)*100,2)
 
 
 if __name__ == '__main__':

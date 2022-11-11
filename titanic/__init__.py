@@ -23,7 +23,7 @@ if __name__ == '__main__':
             print(this.train.columns)
         elif menu == "3":
             print(" ### 머신러닝 ### ")
-            df = api.learning('train.csv', 'test.csv')
+            api.learning('train.csv', 'test.csv')
         elif menu == "4":
             print(" ### 배포 ### ")
             df = api.submit('train.csv', 'test.csv')

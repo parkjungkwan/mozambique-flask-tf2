@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Dataset(object):
+class Dataset:
 
     context: str # 파일이 저장된 경로
     fname: str # 파일명

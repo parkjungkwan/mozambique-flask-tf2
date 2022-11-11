@@ -113,7 +113,8 @@ class TitanicModel(object):
         return KFold(n_splits=10, shuffle=True, random_state=0)
 
     @staticmethod
-    def get_accuracy(this):
+    def get_accuracy(this, algo):
+
         score = cross_val_score(RandomForestClassifier(),
                                 this.train,
                                 this.label,

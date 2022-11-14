@@ -114,9 +114,9 @@ class StrokeService:
     '''
     def categorical_variables(self):
         t = self.adult_stoke
-        category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '뇌졸중']
-        print(f'변주형변수 데이터타입\n {t[category].dtypes}')
-        print(f'변주형변수 결측값\n {t[category].isnull().sum()}')
+        category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '고혈압']
+        print(f'범주형변수 데이터타입\n {t[category].dtypes}')
+        print(f'범주형변수 결측값\n {t[category].isnull().sum()}')
         print(f'결측값 있는 변수\n {t[category].isna().any()[lambda x: x]}')
         # 결측값이 없음
         self.stroke = t

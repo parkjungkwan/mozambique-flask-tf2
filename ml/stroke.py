@@ -118,6 +118,11 @@ class StrokeService:
         print(f'변주형변수 데이터타입\n {t[category].dtypes}')
         print(f'변주형변수 결측값\n {t[category].isnull().sum()}')
         print(f'결측값 있는 변수\n {t[category].isna().any()[lambda x: x]}')
+        # 결측값이 없음
+        self.stroke = t
+        self.spec()
+        print(" ### 프리프로세스 종료 ### ")
+
 
 
         

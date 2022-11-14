@@ -2,7 +2,60 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-class Mpg:
+MPG_MENUS = ["종료",
+         "스펙보기", # 1.
+         "변수 한글변경", # 2.
+         "연비 시각화", # 3.
+         "배기량 비교", #4.
+         "시내주행 연비비교", #5.
+         "고속주행 연비비교", #6.
+         "suv/컴팩 중 시내주행평균연비가 높은쪽 출력", #7
+         "아우디차에서 고속주행 연비 1~5위 출력", #8.
+         "평균연비가 가장 높은 자동차 1~3위 출력" #9.
+         ]
+mpg_meta = {
+    "manufacturer": "회사",
+    "model": "모델",
+    "displ": "배기량",
+    "year": "연식",
+    "cyl": "실린더",
+    "trans": "차축",
+    "drv": "오토",
+    "cty": "시내주행",
+    "hwy": "고속주행",
+    "fl": "연료",
+    "class": "차종"
+}
+mpg_menu = {
+    "1" : lambda t: t.spec(),
+    "2" : lambda t: t.rename_meta(),
+    "3" : lambda t: t.visualize(),
+    "4" : lambda t: t.compare_displ(),
+    "5" : lambda t: t.find_high_cty(),
+    "6" : lambda t: t.find_highest_hwy(),
+    "7" : lambda t: t.which_cty_in_suv_compact(),
+    "8" : lambda t: t.find_top5_hwy_in_audi(),
+    "9" : lambda t: t.find_top3_avg(),
+}
+'''
+Data columns (total 12 columns):
+ #   Column        Non-Null Count  Dtype  
+---  ------        --------------  -----  
+ 0   Unnamed: 0    234 non-null    int64  
+ 1   manufacturer : 회사  234 non-null    object 
+ 2   model : 모델        234 non-null    object 
+ 3   displ : 배기량         234 non-null    float64
+ 4   year : 연식         234 non-null    int64  
+ 5   cyl : 실린더          234 non-null    int64  
+ 6   trans : 차축        234 non-null    object 
+ 7   drv : 오토          234 non-null    object 
+ 8   cty : 시내연비          234 non-null    int64  
+ 9   hwy : 시외연비          234 non-null    int64  
+ 10  fl : 연료            234 non-null    object 
+ 11  class : 차종         234 non-null    object 
+dtypes: float64(1), int64(5), object(6)
+'''
+class MpgService:
 
     def __init__(self):
         self.mpg = pd.read_csv('./data/mpg.csv')
@@ -94,57 +147,3 @@ class Mpg:
         pass
 
 
-
-MPG_MENUS = ["종료",
-         "스펙보기", # 1.
-         "변수 한글변경", # 2.
-         "연비 시각화", # 3.
-         "배기량 비교", #4.
-         "시내주행 연비비교", #5.
-         "고속주행 연비비교", #6.
-         "suv/컴팩 중 시내주행평균연비가 높은쪽 출력", #7
-         "아우디차에서 고속주행 연비 1~5위 출력", #8.
-         "평균연비가 가장 높은 자동차 1~3위 출력" #9.
-         ]
-mpg_meta = {
-    "manufacturer": "회사",
-    "model": "모델",
-    "displ": "배기량",
-    "year": "연식",
-    "cyl": "실린더",
-    "trans": "차축",
-    "drv": "오토",
-    "cty": "시내주행",
-    "hwy": "고속주행",
-    "fl": "연료",
-    "class": "차종"
-}
-mpg_menu = {
-    "1" : lambda t: t.spec(),
-    "2" : lambda t: t.rename_meta(),
-    "3" : lambda t: t.visualize(),
-    "4" : lambda t: t.compare_displ(),
-    "5" : lambda t: t.find_high_cty(),
-    "6" : lambda t: t.find_highest_hwy(),
-    "7" : lambda t: t.which_cty_in_suv_compact(),
-    "8" : lambda t: t.find_top5_hwy_in_audi(),
-    "9" : lambda t: t.find_top3_avg(),
-}
-'''
-Data columns (total 12 columns):
- #   Column        Non-Null Count  Dtype  
----  ------        --------------  -----  
- 0   Unnamed: 0    234 non-null    int64  
- 1   manufacturer : 회사  234 non-null    object 
- 2   model : 모델        234 non-null    object 
- 3   displ : 배기량         234 non-null    float64
- 4   year : 연식         234 non-null    int64  
- 5   cyl : 실린더          234 non-null    int64  
- 6   trans : 차축        234 non-null    object 
- 7   drv : 오토          234 non-null    object 
- 8   cty : 시내연비          234 non-null    int64  
- 9   hwy : 시외연비          234 non-null    int64  
- 10  fl : 연료            234 non-null    object 
- 11  class : 차종         234 non-null    object 
-dtypes: float64(1), int64(5), object(6)
-'''

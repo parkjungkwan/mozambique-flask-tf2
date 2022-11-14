@@ -31,7 +31,7 @@ class Mpg:
     2.한글 메타데이터
     '''
     def rename_meta(self):
-        self.my_mpg = self.mpg.rename(columns=my_meta)
+        self.my_mpg = self.mpg.rename(columns=mpg_meta)
         print(" --- 2.Features ---")
         print(self.my_mpg.columns)
 
@@ -93,12 +93,9 @@ class Mpg:
     def find_top3_avg(self):
         pass
 
-def my_menu(ls):
-    for i, j in enumerate(ls):
-        print(f"{i}. {j}")
-    return input('메뉴선택: ')
 
-MENUS = ["종료",
+
+MPG_MENUS = ["종료",
          "스펙보기", # 1.
          "변수 한글변경", # 2.
          "연비 시각화", # 3.
@@ -109,7 +106,7 @@ MENUS = ["종료",
          "아우디차에서 고속주행 연비 1~5위 출력", #8.
          "평균연비가 가장 높은 자동차 1~3위 출력" #9.
          ]
-my_meta = {
+mpg_meta = {
     "manufacturer": "회사",
     "model": "모델",
     "displ": "배기량",
@@ -122,7 +119,7 @@ my_meta = {
     "fl": "연료",
     "class": "차종"
 }
-switch = {
+mpg_menu = {
     "1" : lambda t: t.spec(),
     "2" : lambda t: t.rename_meta(),
     "3" : lambda t: t.visualize(),
@@ -133,18 +130,6 @@ switch = {
     "8" : lambda t: t.find_top5_hwy_in_audi(),
     "9" : lambda t: t.find_top3_avg(),
 }
-if __name__ == '__main__':
-    t = Mpg()
-    while True:
-        menu = my_menu(MENUS)
-        if menu == '0':
-            print("종료")
-            break
-        else:
-            try:
-                switch[menu](t)
-            except KeyError:
-                print(" ### Error ### ")
 '''
 Data columns (total 12 columns):
  #   Column        Non-Null Count  Dtype  

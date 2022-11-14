@@ -2,6 +2,39 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+'''
+Data columns (total 12 columns):
+ #   Column        Non-Null Count  Dtype  
+---  ------        --------------  -----  
+ 0   Unnamed: 0    234 non-null    int64  
+ 1   manufacturer : 회사  234 non-null    object 
+ 2   model : 모델        234 non-null    object 
+ 3   displ : 배기량         234 non-null    float64
+ 4   year : 연식         234 non-null    int64  
+ 5   cyl : 실린더          234 non-null    int64  
+ 6   trans : 차축        234 non-null    object 
+ 7   drv : 오토          234 non-null    object 
+ 8   cty : 시내연비          234 non-null    int64  
+ 9   hwy : 시외연비          234 non-null    int64  
+ 10  fl : 연료            234 non-null    object 
+ 11  class : 차종         234 non-null    object 
+dtypes: float64(1), int64(5), object(6)
+
+'''
+my_meta = {
+    "manufacturer": "회사",
+    "model": "모델",
+    "displ": "배기량",
+    "year": "연식",
+    "cyl": "실린더",
+    "trans": "차축",
+    "drv": "오토",
+    "cty": "시내주행",
+    "hwy": "고속주행",
+    "fl": "연료",
+    "class": "차종"
+}
+
 class Mpg:
 
     def __init__(self):
@@ -53,40 +86,31 @@ class Mpg:
     4.배기량이 4이하와 5이상 자동차의 고속주행연비 비교 (p.144)
     '''
     def compare_displ(self):
-        print(f"배기량이 4 이하 고속주행: {self.my_mpg.query('배기량 <= 4')['고속주행'].mean():.2f}" )
-        print(f"배기량이 5 이상 고속주행: {self.my_mpg.query('배기량 >= 5')['고속주행'].mean():.2f}")
+        pass
     '''
     5.시내주행 연비 평균이 가장 높은 회사는? (p.150)
     '''
     def find_high_cty(self):
-        print(f"아우디의 평균 도시연비: %0.2f"% self.my_mpg.query('회사 == "audi"')['시내주행'].mean())
-        print(f"토요타의 평균 도시연비: %0.2f"% self.my_mpg.query('회사 == "toyota"')['시내주행'].mean())
+        pass
     '''
     6.고속주행 연비 평균이 가장 높은 회사는? (p.150)
     '''
     def find_highest_hwy(self):
-        all_avg = self.my_mpg.query('회사 in ["chevrolet","ford","honda"]')
-        print(f"세 회사의 평균 도시연비:{all_avg['고속주행'].mean():.2f}" )
-
-        # 메타데이터가 category, cty 데이터는 해당 raw 데이터인 객체생성
-        # 후 다음 문제 풀이
+        pass
 
     '''
     7.suv / 컴팩 자동차 중 어떤 자동차의 도시연비 평균이 더 높은가?? (p.150)
     메타데이터가 category, cty 데이터는 해당 raw 데이터인 객체생성
     '''
     def which_cty_in_suv_compact(self):
-        print("suv 자동차의 시내주행: %0.2f"%
-              self.my_mpg.query("차종 == 'suv'")['시내주행'].mean())  # clazz가 suv인 행만 추출한 다음 cty 호출 후 그 객체의 평균구함
-        print("compact 자동차의 시내주행: %0.2f"% self.my_mpg.query("차종 == 'compact'")['시내주행'].mean())
+        pass
 
     '''
     8.고속주행 연비 평균이 가장 높은 회사는? (p.153)
     '''
     def find_top5_hwy_in_audi(self):
-        a = self.my_mpg.query("회사 == 'audi'")
-        b = a.sort_values(['고속주행'], ascending=False).head()
-        print(b.head(1))
+        pass
+
     '''
     9.고속주행 연비 평균이 가장 높은 회사는? (p.158)
     '''
@@ -109,19 +133,6 @@ MENUS = ["종료",
          "아우디차에서 고속주행 연비 1~5위 출력", #8.
          "평균연비가 가장 높은 자동차 1~3위 출력" #9.
          ]
-my_meta = {
-    "manufacturer": "회사",
-    "model": "모델",
-    "displ": "배기량",
-    "year": "연식",
-    "cyl": "실린더",
-    "trans": "차축",
-    "drv": "오토",
-    "cty": "시내주행",
-    "hwy": "고속주행",
-    "fl": "연료",
-    "class": "차종"
-}
 switch = {
     "1" : lambda t: t.spec(),
     "2" : lambda t: t.rename_meta(),
@@ -145,21 +156,3 @@ if __name__ == '__main__':
                 switch[menu](t)
             except KeyError:
                 print(" ### Error ### ")
-'''
-Data columns (total 12 columns):
- #   Column        Non-Null Count  Dtype  
----  ------        --------------  -----  
- 0   Unnamed: 0    234 non-null    int64  
- 1   manufacturer : 회사  234 non-null    object 
- 2   model : 모델        234 non-null    object 
- 3   displ : 배기량         234 non-null    float64
- 4   year : 연식         234 non-null    int64  
- 5   cyl : 실린더          234 non-null    int64  
- 6   trans : 차축        234 non-null    object 
- 7   drv : 오토          234 non-null    object 
- 8   cty : 시내연비          234 non-null    int64  
- 9   hwy : 시외연비          234 non-null    int64  
- 10  fl : 연료            234 non-null    object 
- 11  class : 차종         234 non-null    object 
-dtypes: float64(1), int64(5), object(6)
-'''

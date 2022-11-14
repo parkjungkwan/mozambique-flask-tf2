@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import OrdinalEncoder
 
 STROKE_MENUS = ["종료", #0
                 "데이터구조파악",#1
@@ -109,19 +110,24 @@ class StrokeService:
         print(f'--- 이상치 제거한 성인객체스펙 ---\n{self.adult_stoke.shape}')
 
     '''
-    4.범주형 = ['성별', '심장병', '기혼여부', '직종', '거주형태',
-                '흡연여부', '뇌졸중']
+    4.범주형 = ['성별', '심장병', '기혼여부', '직종', '거주형태','흡연여부', '고혈압']
     '''
     def categorical_variables(self):
         t = self.adult_stoke
         category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '고혈압']
         print(f'범주형변수 데이터타입\n {t[category].dtypes}')
         print(f'범주형변수 결측값\n {t[category].isnull().sum()}')
-        print(f'결측값 있는 변수\n {t[category].isna().any()[lambda x: x]}')
-        # 결측값이 없음
+        print(f'결측값 있는 변수\n {t[category].isna().any()[lambda x: x]}')# 결측값이 없음
+        t['성별'] = OrdinalEncoder().fit_transform(t['성별'].values.reshape(-1,1))
+        t['기혼여부'] = OrdinalEncoder().fit_transform(t['기혼여부'].values.reshape(-1, 1))
+        t['직종'] = OrdinalEncoder().fit_transform(t['직종'].values.reshape(-1, 1))
+        t['거주형태'] = OrdinalEncoder().fit_transform(t['거주형태'].values.reshape(-1, 1))
+        t['흡연여부'] = OrdinalEncoder().fit_transform(t['흡연여부'].values.reshape(-1, 1))
+
         self.stroke = t
         self.spec()
         print(" ### 프리프로세스 종료 ### ")
+        self.stroke.to_csv("./save/stroke.csv")
 
 
 

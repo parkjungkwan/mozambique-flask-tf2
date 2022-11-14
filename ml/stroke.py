@@ -9,9 +9,16 @@ STROKE_MENUS = ["종료", #0
                 "학습",#6
                 "예측"]#7
 stroke_meta = {
-    'id', 'gender', 'age', 'hypertension', 'heart_disease', 'ever_married',
-       'work_type', 'Residence_type', 'avg_glucose_level', 'bmi',
-       'smoking_status', 'stroke'
+    'id':'아이디', 'gender':'성별', 'age':'나이', 
+    'hypertension':'고혈압',
+    'heart_disease':'심장병',
+    'ever_married':'기혼여부',
+    'work_type':'직종',
+    'Residence_type':'거주형태',
+    'avg_glucose_level':'평균혈당',
+    'bmi':'비만도',
+    'smoking_status':'흡연여부',
+    'stroke':'뇌졸중'
 }
 stroke_menu = {
     "1" : lambda t: t.spec(),

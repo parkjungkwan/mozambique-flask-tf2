@@ -1,13 +1,14 @@
 import pandas as pd
 
 STROKE_MENUS = ["종료", #0
-                "데이터구하기",#1
-                "타깃변수설정",#2
-                "데이터처리",#3
-                "시각화",#4
-                "모델링",#5
-                "학습",#6
-                "예측"]#7
+                "데이터구조파악",#1
+                "변수한글화",#2
+                "구간변수편집",#3 18세이상만 사용함
+                "범주형변수편집",#4
+                "시각화",#5
+                "모델링",#6
+                "학습",#7
+                "예측"]#8
 stroke_meta = {
     'id':'아이디', 'gender':'성별', 'age':'나이', 
     'hypertension':'고혈압',
@@ -16,20 +17,16 @@ stroke_meta = {
     'work_type':'직종',
     'Residence_type':'거주형태',
     'avg_glucose_level':'평균혈당',
-    'bmi':'비만도',
+    'bmi':'체질량지수',
     'smoking_status':'흡연여부',
     'stroke':'뇌졸중'
 }
 stroke_menu = {
     "1" : lambda t: t.spec(),
     "2" : lambda t: t.rename_meta(),
-    "3" : lambda t: t.visualize(),
-    "4" : lambda t: t.compare_displ(),
-    "5" : lambda t: t.find_high_cty(),
-    "6" : lambda t: t.find_highest_hwy(),
-    "7" : lambda t: t.which_cty_in_suv_compact(),
-    "8" : lambda t: t.find_top5_hwy_in_audi(),
-    "9" : lambda t: t.find_top3_avg(),
+    "3" : lambda t: t.interval_variables(),
+    "4" : lambda t: t.categorical_variables(),
+
 }
 '''
 <class 'pandas.core.frame.DataFrame'>
@@ -58,6 +55,7 @@ class StrokeService:
     def __init__(self):
         self.stroke = pd.read_csv('./data/healthcare-dataset-stroke-data.csv')
         self.my_stroke = None
+        self.adult_stoke = None
     '''
     1.스펙보기
     '''
@@ -83,3 +81,43 @@ class StrokeService:
         self.my_stroke = self.stroke.rename(columns=stroke_meta)
         print(" --- 2.Features ---")
         print(self.my_stroke.columns)
+
+    '''
+    3.타깃변수(=종속변수 dependent, Y값) 설정
+    입력변수(=설명변수, 확률변수, X값)
+    타깃변수명: stroke (=뇌졸중)
+    타깃변수값: 과거에 한 번이라도 뇌졸중이 발병했으면 1, 아니면 0
+    인터벌 = ['나이','평균혈당','체질량지수']
+    '''
+    def interval_variables(self):
+        t = self.my_stroke
+        interval = ['나이','평균혈당','체질량지수']
+        print(f'--- 구간변수 타입 --- \n {t[interval].dtypes}')
+        print(f'--- 결측값 있는 변수 --- \n {t[interval].isna().any()[lambda x: x]}')
+        print(f'체질량 결측비율: {t["체질량지수"].isnull().mean():.2f}')
+        # 체질량 결측비율: 0.03 는 무시한다
+        pd.options.display.float_format = '{:.2f}'.format
+        print(f'--- 구간변수 기초 통계량 --- \n{t[interval].describe()}')
+        criterion = t['나이'] > 18
+        self.adult_stoke = t[criterion]
+        print(f'--- 성인객체스펙 --- \n{self.adult_stoke.shape}')
+        # 평균혈당 232.64이하와 체질량지수 60.3이하를 이상치로 규정하고 제거함
+        t = self.adult_stoke
+        c1 = t['평균혈당'] <= 232.64
+        c2 = t['체질량지수'] <= 60.3
+        self.adult_stoke = self.adult_stoke[c1 & c2]
+        print(f'--- 이상치 제거한 성인객체스펙 ---\n{self.adult_stoke.shape}')
+
+    '''
+    4.범주형 = ['성별', '심장병', '기혼여부', '직종', '거주형태',
+                '흡연여부', '뇌졸중']
+    '''
+    def categorical_variables(self):
+        t = self.adult_stoke
+        category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '뇌졸중']
+        print(f'변주형변수 데이터타입\n {t[category].dtypes}')
+        print(f'변주형변수 결측값\n {t[category].isnull().sum()}')
+        print(f'결측값 있는 변수\n {t[category].isna().any()[lambda x: x]}')
+
+
+        

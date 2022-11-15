@@ -62,6 +62,8 @@ class StrokeService:
         self.stroke = pd.read_csv('./data/healthcare-dataset-stroke-data.csv')
         self.my_stroke = None
         self.adult_stoke = None
+        self.target = None
+        self.data = None
     '''
     1.스펙보기
     '''
@@ -95,7 +97,7 @@ class StrokeService:
     타깃변수값: 과거에 한 번이라도 뇌졸중이 발병했으면 1, 아니면 0
     인터벌 = ['나이','평균혈당','체질량지수']
     '''
-    def interval_variables(self):
+    def interval(self):
         t = self.my_stroke
         interval = ['나이','평균혈당','체질량지수']
         print(f'--- 구간변수 타입 --- \n {t[interval].dtypes}')
@@ -118,9 +120,9 @@ class StrokeService:
     4.범주형 = ['성별', '심장병', '기혼여부', '직종', '거주형태','흡연여부', '고혈압']
     '''
 
-    def ratio_variables(self): # 해당 컬럼이 없음
+    def ratio(self): # 해당 컬럼이 없음
         pass
-    def norminal_variables(self):
+    def norminal(self):
         t = self.adult_stoke
         category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '고혈압']
         print(f'범주형변수 데이터타입\n {t[category].dtypes}')
@@ -137,13 +139,23 @@ class StrokeService:
         print(" ### 프리프로세스 종료 ### ")
         self.stroke.to_csv("./save/stroke.csv")
 
-    def ordinal_variables(self): # 해당 컬럼이 없음
+    def ordinal(self): # 해당 컬럼이 없음
         pass
 
-    def sampling(self):
+    '''
+    데이터프레임을 데이터 파티션하기 전에 타깃변수와 입력변수를 
+    target 과 data 에 분리하여 저장한다.
+    '''
+    def target(self):
         df = pd.read_csv('./save/stroke.csv')
-        data = df.drop(['뇌졸중'], axis=1)
-        target = df['뇌졸중']
+        self.data = df.drop(['뇌졸중'], axis=1)
+        self.target = df['뇌졸중']
+        print(f'--- data shape --- \n {self.data}')
+        print(f'--- target shape --- \n {self.target}')
+
+    def sampling(self):
+        data = self.data
+        target = self.target
         undersample = RandomUnderSampler(sampling_strategy=0.333, random_state=2)
         data_under, target_under = undersample.fit_resample(data, target)
         print(target_under.value_counts(dropna=True))

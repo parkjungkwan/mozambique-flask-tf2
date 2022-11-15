@@ -15,7 +15,7 @@ class TitanicController(object):
     def preprocess(self,train, test) -> object: # 전처리
         model = self.model
         this = self.dataset
-        this.train = model.new_model(train)
+        this.train = model.new_model(train) # Data Partition
         this.test = model.new_model(test)
         this.id = this.test['PassengerId']
         this = model.sex_norminal(this)

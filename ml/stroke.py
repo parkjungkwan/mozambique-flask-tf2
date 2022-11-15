@@ -1,12 +1,13 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
-
+from imblearn.under_sampling import RandomUnderSampler
 STROKE_MENUS = ["종료", #0
                 "데이터구조파악",#1
                 "변수한글화",#2
-                "구간변수편집",#3 18세이상만 사용함
+                "연속형변수편집",#3 18세이상만 사용함
                 "범주형변수편집",#4
-                "시각화",#5
+                "샘플링",#5
                 "모델링",#6
                 "학습",#7
                 "예측"]#8
@@ -27,6 +28,10 @@ stroke_menu = {
     "2" : lambda t: t.rename_meta(),
     "3" : lambda t: t.interval_variables(),
     "4" : lambda t: t.categorical_variables(),
+    "5" : lambda t: t.sampling(),
+    "6" : lambda t: print(" ** No Function ** "),
+    "7" : lambda t: print(" ** No Function ** "),
+    "8" : lambda t: print(" ** No Function ** "),
 
 }
 '''
@@ -112,7 +117,10 @@ class StrokeService:
     '''
     4.범주형 = ['성별', '심장병', '기혼여부', '직종', '거주형태','흡연여부', '고혈압']
     '''
-    def categorical_variables(self):
+
+    def ratio_variables(self): # 해당 컬럼이 없음
+        pass
+    def norminal_variables(self):
         t = self.adult_stoke
         category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '고혈압']
         print(f'범주형변수 데이터타입\n {t[category].dtypes}')
@@ -128,6 +136,23 @@ class StrokeService:
         self.spec()
         print(" ### 프리프로세스 종료 ### ")
         self.stroke.to_csv("./save/stroke.csv")
+
+    def ordinal_variables(self): # 해당 컬럼이 없음
+        pass
+
+    def sampling(self):
+        df = pd.read_csv('./save/stroke.csv')
+        data = df.drop(['뇌졸중'], axis=1)
+        target = df['뇌졸중']
+        undersample = RandomUnderSampler(sampling_strategy=0.333, random_state=2)
+        data_under, target_under = undersample.fit_resample(data, target)
+        print(target_under.value_counts(dropna=True))
+        X_train, X_test, y_train, y_test = train_test_split(data_under, target_under,
+                                                            test_size=0.5, random_state=42, stratify=target_under)
+        print("X_train shape:", X_train.shape)
+        print("X_test shape:", X_test.shape)
+        print("y_train shape:", y_train.shape)
+        print("y_test shape:", y_test.shape)
 
 
 

@@ -13,7 +13,10 @@ if __name__ == '__main__':
             print("종료")
             break
         else:
+            stroke_menu[menu](t)
+            '''
             try:
                 stroke_menu[menu](t)
             except KeyError:
                 print(" ### Error ### ")
+            '''

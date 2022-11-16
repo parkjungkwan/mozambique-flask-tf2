@@ -97,7 +97,7 @@ class OklahomaService:
     타깃변수값: 과거에 한 번이라도 뇌졸중이 발병했으면 1, 아니면 0
     인터벌 = ['나이','평균혈당','체질량지수']
     '''
-    def interval_variables(self):
+    def interval(self):
         t = self.my_oklahoma
         interval = ['나이','평균혈당','체질량지수']
         print(f'--- 구간변수 타입 --- \n {t[interval].dtypes}')
@@ -120,9 +120,9 @@ class OklahomaService:
     4.범주형 = ['성별', '심장병', '기혼여부', '직종', '거주형태','흡연여부', '고혈압']
     '''
 
-    def ratio_variables(self): # 해당 컬럼이 없음
+    def ratio(self): # 해당 컬럼이 없음
         pass
-    def norminal_variables(self):
+    def norminal(self):
         t = self.adult_stoke
         category = ['성별', '심장병', '기혼여부', '직종', '거주형태', '흡연여부', '고혈압']
         print(f'범주형변수 데이터타입\n {t[category].dtypes}')
@@ -139,9 +139,12 @@ class OklahomaService:
         print(" ### 프리프로세스 종료 ### ")
         self.oklahoma.to_csv("./save/oklahoma.csv")
 
-    def ordinal_variables(self): # 해당 컬럼이 없음
+    def ordinal(self): # 해당 컬럼이 없음
         pass
 
     def target(self):
+        pass
+
+    def partition(self):
         pass
 

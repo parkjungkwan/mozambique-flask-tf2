@@ -92,6 +92,14 @@ class Crime:
             _loc = _[0].get('geometry')
             station_lats.append(_loc['location']['lat'])
             station_lngs.append(_loc['location']['lng'])
+        gu_names = []
+        for name in station_addrs:
+            _ = name.split()
+            gu_name = [gu for gu in _ if gu[-1] == '구'][0]
+            gu_names.append(gu_name)
+        crime['구별'] = gu_names
+        crime.to_csv('./save/police_pos.csv', index=False)
+
 
 
 

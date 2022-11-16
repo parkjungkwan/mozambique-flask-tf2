@@ -1,3 +1,4 @@
+import googlemaps
 import pandas as pd
 
 CRIME_MENUS = ["Exit", #0
@@ -77,7 +78,23 @@ class Crime:
             station_names.append(f'서울{str(name[:-1])}경찰서')
         print(f" 서울시내 경찰서는 총 {len(station_names)}개 이다")
         [print(f"{str(i)}") for i in station_names]
-        print(" API에서 주소추출 시작 ")
+
+        gmaps = (lambda x: googlemaps.Client(key=x))("")
+        print(gmaps.geocode("서울중부경찰서", language='ko'))
+        print(" ### API에서 주소추출 시작 ### ")
+        station_addrs = []
+        station_lats = []
+        station_lngs = []
+        for i, name in enumerate(station_names):
+            _ = gmaps.geocode(name, language='ko')
+            print(f'name {i} = {_[0].get("formatted_address")}')
+            station_addrs.append(_[0].get('formatted_address'))
+            _loc = _[0].get('geometry')
+            station_lats.append(_loc['location']['lat'])
+            station_lngs.append(_loc['location']['lng'])
+
+
+
 
 
 

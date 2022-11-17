@@ -46,9 +46,9 @@ None
 class Crime:
 
     def __init__(self):
-        crime_in_seoul = pd.read_csv('./data/crime_in_seoul.csv')
-
-        # self.crime = pd.to_numeric(crime_in_seoul, downcast='integer')
+        self.crime = pd.read_csv('./data/crime_in_seoul.csv')
+        cols = ['절도 발생','절도 검거','폭력 발생', '폭력 검거']
+        self.crime[cols] = self.crime[cols].replace(',', '', regex=True).astype(int)  # regex=True
         self.cctv = pd.read_csv('./data/cctv_in_seoul.csv')
         self.pop = pd.read_excel('./data/pop_in_seoul.xls',usecols=["자치구","합계","한국인","등록외국인","65세이상고령자"], skiprows=[0,2])
         self.ls = [self.crime, self.cctv, self.pop]

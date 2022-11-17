@@ -57,7 +57,7 @@ class Crime:
         self.crime_rate_columns = ['살인검거율', '강도검거율', '강간검거율', '절도검거율', '폭력검거율']
         self.crime_columns = ['살인', '강도', '강간', '절도', '폭력']
         self.arrest_columns = ['살인 검거', '강도 검거', '강간 검거', '절도 검거', '폭력 검거']
-        self.us_states = pd.read_json('./data/us-states.json')
+        self.us_states = './data/us-states.json'
         self.us_unemployment = pd.read_csv('./data/us_unemployment.csv')
         print(self.us_unemployment)
     '''
@@ -197,24 +197,30 @@ class Crime:
     def folium_example(self):
         us_states = self.us_states
         us_unemployment = self.us_unemployment
-        bins = list(us_unemployment["Unemployment"]).quantile([0, 0.25, 0.5, 0.75, 1])
-        m = folium.Map(location=[48, -102], tiles="Unemployment", zoom_start=5)
-        folium.Choropleth(
-            radius=100,
-            location=[45.5244, -122.6699],
-            popup="The Waterfront",
-            color="crimson",
-            fill=False,
-        ).add_to(m)
 
-        folium.CircleMarker(
-            location=[45.5215, -122.6261],
-            radius=50,
-            popup="Laurelhurst Park",
-            color="#3186cc",
-            fill=True,
-            fill_color="#3186cc",
+        url = (
+            "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data"
+        )
+        state_geo = f"{url}/us-states.json"
+        state_unemployment = f"{url}/US_Unemployment_Oct2012.csv"
+        state_data = pd.read_csv(state_unemployment)
+
+        bins = list(us_unemployment["Unemployment"].quantile([0, 0.25, 0.5, 0.75, 1]))
+        m = folium.Map(location=[48, -102], zoom_start=5)
+        folium.Choropleth(
+            geo_data=state_geo, # us_states,
+            data=state_data, #us_unemployment,
+            name="choropleth",
+            columns=["State","Unemployment"],
+            key_on="feature.id",
+            fill_color="YlGn",
+            fill_opacity=0.7,
+            line_opacity=0.5,
+            legend_name='Unemployment Rate (%)',
+            bins=bins
         ).add_to(m)
+        m.save("./save/unemployment.html")
+
 
     def ordinal(self):
         pass

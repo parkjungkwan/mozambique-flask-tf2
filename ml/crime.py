@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 import folium
-
+import json
 CRIME_MENUS = ["Exit", #0
                 "Show Spec",#1
                 "Save Police Position",#2.
@@ -57,7 +57,9 @@ class Crime:
         self.crime_rate_columns = ['살인검거율', '강도검거율', '강간검거율', '절도검거율', '폭력검거율']
         self.crime_columns = ['살인', '강도', '강간', '절도', '폭력']
         self.arrest_columns = ['살인 검거', '강도 검거', '강간 검거', '절도 검거', '폭력 검거']
-
+        self.us_states = pd.read_json('./data/us-states.json')
+        self.us_unemployment = pd.read_csv('./data/us_unemployment.csv')
+        print(self.us_unemployment)
     '''
     1.스펙보기 
     id = SERIALNO  
@@ -193,9 +195,11 @@ class Crime:
         print(pd.read_pickle('./save/police_norm.pkl'))
 
     def folium_example(self):
-        m = folium.Map(location=[45.5236, -122.6750], tiles="Stamen Toner", zoom_start=13)
-
-        folium.Circle(
+        us_states = self.us_states
+        us_unemployment = self.us_unemployment
+        bins = list(us_unemployment["Unemployment"]).quantile([0, 0.25, 0.5, 0.75, 1])
+        m = folium.Map(location=[48, -102], tiles="Unemployment", zoom_start=5)
+        folium.Choropleth(
             radius=100,
             location=[45.5244, -122.6699],
             popup="The Waterfront",

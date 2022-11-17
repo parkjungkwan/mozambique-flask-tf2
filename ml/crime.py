@@ -2,13 +2,14 @@ import googlemaps
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
+import folium
 
 CRIME_MENUS = ["Exit", #0
                 "Show Spec",#1
                 "Save Police Position",#2.
                 "Save CCTV Population",#3
                 "Save Police Normalization",#4
-                "ordinal",#5
+                "Folium Example",#5
                 "Partition",#6
                 "미완성: Fit",#7
                 "미완성: Predicate"]#8
@@ -18,7 +19,7 @@ crime_menu = {
     "2" : lambda t: t.save_police_pos(),
     "3" : lambda t: t.save_cctv_pop(),
     "4" : lambda t: t.save_police_norm(),
-    "5" : lambda t: t.ordinal(),
+    "5" : lambda t: t.folium_example(),
     "6" : lambda t: t.target(),
     "7" : lambda t: t.partition()
 }
@@ -185,11 +186,31 @@ class Crime:
         분포(스케일)를 유사하게 만드는 작업
         """
         police_norm = pd.DataFrame(x_scaled, columns=self.crime_columns, index=police.index)
-        print(police_norm)
+        police_norm[self.crime_rate_columns] = police[self.crime_rate_columns]
+        police_norm['범죄'] = np.sum(police_norm[self.crime_rate_columns], axis=1)
+        police_norm['검거'] = np.sum(police_norm[self.crime_columns], axis=1)
+        police_norm.to_pickle('./save/police_norm.pkl')
+        print(pd.read_pickle('./save/police_norm.pkl'))
 
+    def folium_example(self):
+        m = folium.Map(location=[45.5236, -122.6750], tiles="Stamen Toner", zoom_start=13)
 
-    def norminal(self):
-        pass
+        folium.Circle(
+            radius=100,
+            location=[45.5244, -122.6699],
+            popup="The Waterfront",
+            color="crimson",
+            fill=False,
+        ).add_to(m)
+
+        folium.CircleMarker(
+            location=[45.5215, -122.6261],
+            radius=50,
+            popup="Laurelhurst Park",
+            color="#3186cc",
+            fill=True,
+            fill_color="#3186cc",
+        ).add_to(m)
 
     def ordinal(self):
         pass

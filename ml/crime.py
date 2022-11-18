@@ -143,7 +143,6 @@ class Crime:
         # 구와 경찰서의 위치가 다른 경우 수작업
         crime.loc[crime['관서명'] == '혜화서', ['구별']] = '종로구'
         crime.loc[crime['관서명'] == '서부서', ['구별']] = '은평구'
-        crime.loc[crime['관서명'] == '강서서', ['구별']] = '강서구'
         crime.loc[crime['관서명'] == '종암서', ['구별']] = '성북구'
         crime.loc[crime['관서명'] == '방배서', ['구별']] = '서초구'
         crime.loc[crime['관서명'] == '수서서', ['구별']] = '강남구'
@@ -269,5 +268,27 @@ class Crime:
         return tuple(zip(police_norm.index, police_norm['범죄']))
         # police_norm.index 는 '구별'
 
-    def partition(self):
-        pass
+def set_json_from_df(fname):
+    df = pd.read_json(fname)
+    '''
+    ## orient
+    df.to_json()  # default : orient='columns'
+    # Output : '{"name":{"0":"Jack","1":"Ace"},"age":{"0":26,"1":87}}'
+    df.to_json(orient='records')
+    # Output : '[{"name":"Jack","age":26},{"name":"Ace","age":87}]'
+    df.to_json(orient='index')
+    # Output : '{"0":{"name":"Jack","age":26},"1":{"name":"Ace","age":87}}'
+    '''
+    print(df.tail(3))
+    df.drop(df.index[[8,51]], inplace=True)
+    ## json으로 쓰기
+    df.to_json("./save/us-states.json", orient='index')
+
+
+if __name__ == '__main__':
+    set_json_from_df("./data/us-states.json")
+    x = pd.read_json("./save/us-states.json")
+    print(x.tail(1))
+
+    # 콜롬비아('id': '11'-> 인덱스 8),
+    # 푸에르토리코('id': '72' -> 인덱스 51)는 준주라서 제거해야함

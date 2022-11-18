@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import googlemaps
 import numpy as np
 import pandas as pd
@@ -6,13 +8,12 @@ import folium
 import json
 CRIME_MENUS = ["Exit", #0
                 "Show Spec",#1
-                "Save Police Position",#2.
-                "Save CCTV Population",#3
-                "Save Police Normalization",#4
-                "Folium Example",#5
-                "Partition",#6
-                "Save Seoul Folium",#7
-                "미완성: Predicate"]#8
+                "Create Police Position Pickle",#2.
+                "Create CCTV Population Pickle",#3
+                "Create Police Normalization Pickle",#4
+                "Create US Unemployment Map",#5
+                "Create Seoul Crime Map",#6
+                ]
 
 crime_menu = {
     "1" : lambda t: t.spec(),
@@ -45,6 +46,21 @@ dtypes: float64(3), int64(4), object(5)
 memory usage: 479.2+ KB
 None
 '''
+
+@dataclass
+class MyChoropleth:
+    geo_data = "",
+    data = object,
+    name = "choropleth",
+    columns = [],
+    key_on = "feature.id",
+    fill_color = "",
+    fill_opacity = 0.0,
+    line_opacity = 0.0,
+    legend_name = "",
+    bins = []
+
+
 class Crime:
 
     def __init__(self):
@@ -192,33 +208,36 @@ class Crime:
         police_norm[self.crime_rate_columns] = police[self.crime_rate_columns]
         police_norm['범죄'] = np.sum(police_norm[self.crime_rate_columns], axis=1)
         police_norm['검거'] = np.sum(police_norm[self.crime_columns], axis=1)
+        police_norm.reset_index(drop=False, inplace=True) # pickle 저장직전 인덱스 해제
         police_norm.to_pickle('./save/police_norm.pkl')
         print(pd.read_pickle('./save/police_norm.pkl'))
 
-    def folium_example(self):
-        us_states = self.us_states
-        us_unemployment = self.us_unemployment
+    def save_us_folium(self):
 
-        url = (
-            "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data"
-        )
-        geo_data = f"{url}/us-states.json"
-        state_unemployment = f"{url}/US_Unemployment_Oct2012.csv"
-        data = pd.read_csv(state_unemployment)
+        mc = MyChoropleth()
+        mc.geo_data = self.us_states
+        mc.data = self.us_unemployment
+        mc.name = "choropleth"
+        mc.columns = ["State","Unemployment"]
+        mc.key_on = "feature.id"
+        mc.fill_color = "YlGn"
+        mc.fill_opacity = 0.7
+        mc.line_opacity = 0.5
+        mc.legend_name = "Unemployment Rate (%)"
+        mc.bins = list(mc.data["Unemployment"].quantile([0, 0.25, 0.5, 0.75, 1]))
 
-        bins = list(us_unemployment["Unemployment"].quantile([0, 0.25, 0.5, 0.75, 1]))
         map = folium.Map(location=[48, -102], zoom_start=5)
         folium.Choropleth(
-            geo_data=geo_data, # us_states,
-            data=data, #us_unemployment,
-            name="choropleth",
-            columns=["State","Unemployment"],
-            key_on="feature.id",
-            fill_color="YlGn",
-            fill_opacity=0.7,
-            line_opacity=0.5,
-            legend_name='Unemployment Rate (%)',
-            bins=bins
+            geo_data=mc.geo_data,
+            data=mc.data,
+            name=mc.name,
+            columns=mc.columns,
+            key_on=mc.key_on,
+            fill_color=mc.fill_color,
+            fill_opacity=mc.fill_opacity,
+            line_opacity=mc.line_opacity,
+            legend_name=mc.legend_name,
+            bins=mc.bins
         ).add_to(map)
         map.save("./save/unemployment.html")
 
@@ -250,7 +269,7 @@ class Crime:
         station_addrs = []
         station_lats = []
         station_lngs = []
-        gmaps = (lambda x: googlemaps.Client(key=x))("")
+        gmaps = (lambda x: googlemaps.Client(key=x))("AIzaSyAaD1o_2faFQ_D8aOHBGBOhvFOuuH7iE88")
         for name in station_names:
             t = gmaps.geocode(name, language='ko')
             station_addrs.append(t[0].get('formatted_address'))

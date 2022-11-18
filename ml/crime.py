@@ -141,12 +141,12 @@ class Crime:
             gu_names.append(gu_name)
         crime['구별'] = gu_names
         # 구와 경찰서의 위치가 다른 경우 수작업
-        crime.loc[crime['관서명'] == '혜화서', ['구별']] == '종로구'
-        crime.loc[crime['관서명'] == '서부서', ['구별']] == '은평구'
-        crime.loc[crime['관서명'] == '강서서', ['구별']] == '양천구'
-        crime.loc[crime['관서명'] == '종암서', ['구별']] == '성북구'
-        crime.loc[crime['관서명'] == '방배서', ['구별']] == '서초구'
-        crime.loc[crime['관서명'] == '수서서', ['구별']] == '강남구'
+        crime.loc[crime['관서명'] == '혜화서', ['구별']] = '종로구'
+        crime.loc[crime['관서명'] == '서부서', ['구별']] = '은평구'
+        crime.loc[crime['관서명'] == '강서서', ['구별']] = '강서구'
+        crime.loc[crime['관서명'] == '종암서', ['구별']] = '성북구'
+        crime.loc[crime['관서명'] == '방배서', ['구별']] = '서초구'
+        crime.loc[crime['관서명'] == '수서서', ['구별']] = '강남구'
         crime.to_pickle('./save/police_pos.pkl')
         print(pd.read_pickle('./save/police_pos.pkl'))
 
@@ -224,7 +224,7 @@ class Crime:
         police_norm[self.crime_rate_columns] = police[self.crime_rate_columns]
         police_norm['범죄'] = np.sum(police_norm[self.crime_rate_columns], axis=1)
         police_norm['검거'] = np.sum(police_norm[self.crime_columns], axis=1)
-        police_norm.reset_index(drop=False, inplace=True) # pickle 저장직전 인덱스 해제
+        # police_norm.reset_index(drop=False, inplace=True) # pickle 저장직전 인덱스 해제
         police_norm.to_pickle('./save/police_norm.pkl')
         print(pd.read_pickle('./save/police_norm.pkl'))
 
@@ -266,7 +266,8 @@ class Crime:
         police_norm = pd.read_pickle('./save/police_norm.pkl')
         temp = police_pos[self.arrest_columns] / police_pos[self.arrest_columns].max()
         police_pos['검거'] = np.sum(temp, axis=1)
-        return tuple(zip(police_norm['구별'], police_norm['범죄']))
+        return tuple(zip(police_norm.index, police_norm['범죄']))
+        # police_norm.index 는 '구별'
 
     def partition(self):
         pass

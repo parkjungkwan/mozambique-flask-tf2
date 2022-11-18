@@ -8,21 +8,20 @@ import folium
 import json
 CRIME_MENUS = ["Exit", #0
                 "Show Spec",#1
-                "Create Police Position Pickle",#2.
-                "Create CCTV Population Pickle",#3
-                "Create Police Normalization Pickle",#4
-                "Create US Unemployment Map",#5
-                "Create Seoul Crime Map",#6
+                "Save Police Position",#2.
+                "Save CCTV Population",#3
+                "Save Police Normalization",#4
+                "Save US Unemployment Map",#5
+                "Save Seoul Crime Map",#6
                 ]
 
 crime_menu = {
-    "1" : lambda t: t.spec(),
+    "1" : lambda t: t.show_spec(),
     "2" : lambda t: t.save_police_pos(),
     "3" : lambda t: t.save_cctv_pop(),
     "4" : lambda t: t.save_police_norm(),
-    "5" : lambda t: t.folium_example(),
-    "6" : lambda t: t.save_seoul_folium(),
-    "7" : lambda t: t.partition()
+    "5" : lambda t: t.save_us_unemployment_map(),
+    "6" : lambda t: t.save_seoul_crime_map(),
 }
 '''
 <class 'pandas.core.frame.DataFrame'>
@@ -48,7 +47,7 @@ None
 '''
 
 @dataclass
-class MyChoropleth:
+class MyChoroplethVO:
     geo_data = "",
     data = object,
     name = "choropleth",
@@ -58,8 +57,27 @@ class MyChoropleth:
     fill_opacity = 0.0,
     line_opacity = 0.0,
     legend_name = "",
-    bins = []
+    bins = [],
+    location = [],
+    zoom_start = 0,
+    save_path = ''
 
+
+def MyChoroplethService(vo):
+    map = folium.Map(location=vo.location, zoom_start=vo.zoom_start)
+    folium.Choropleth(
+        geo_data=vo.geo_data,
+        data=vo.data,
+        name=vo.name,
+        columns=vo.columns,
+        key_on=vo.key_on,
+        fill_color=vo.fill_color,
+        fill_opacity=vo.fill_opacity,
+        line_opacity=vo.line_opacity,
+        legend_name=vo.legend_name,
+        bins=vo.bins
+    ).add_to(map)
+    map.save(vo.save_path)
 
 class Crime:
 
@@ -86,7 +104,7 @@ class Crime:
     Index(['기관명', '소계', '2013년도 이전', '2014년', '2015년', '2016년'], dtype='object'
     '''
 
-    def spec(self):
+    def show_spec(self): # 1
         [(lambda x: print(f"--- 1.Shape ---\n{x.shape}\n"
                                f"--- 2.Features ---\n{x.columns}\n"
                                f"--- 3.Info ---\n{x.info}\n"
@@ -96,7 +114,7 @@ class Crime:
                                f"--- 7.Describe All ---\n{x.describe(include='all')}"))(i)
          for i in self.ls]
 
-    def save_police_pos(self): #
+    def save_police_pos(self): # 2
         crime = self.crime
         station_names = []
         for name in crime['관서명']:
@@ -134,7 +152,7 @@ class Crime:
         crime.to_pickle('./save/police_pos.pkl')
         print(pd.read_pickle('./save/police_pos.pkl'))
 
-    def save_cctv_pop(self): # ratio -> norminal
+    def save_cctv_pop(self): # 3
         cctv = self.cctv
         pop = self.pop
         cctv.rename(columns={cctv.columns[0]: '구별'}, inplace=True)
@@ -174,7 +192,7 @@ class Crime:
         cctv_pop.to_pickle('./save/cctv_pop.pkl')
         print(pd.read_pickle('./save/cctv_pop.pkl'))
 
-    def save_police_norm(self):
+    def save_police_norm(self): # 4
         police_pos = pd.read_pickle('./save/police_pos.pkl')
         police = pd.pivot_table(police_pos,index="구별",aggfunc=np.sum)
         police['살인검거율'] = (police['살인 검거'].astype(int) / police['살인 발생'].astype(int)) * 100
@@ -212,9 +230,8 @@ class Crime:
         police_norm.to_pickle('./save/police_norm.pkl')
         print(pd.read_pickle('./save/police_norm.pkl'))
 
-    def save_us_folium(self):
-
-        mc = MyChoropleth()
+    def save_us_unemployment_map(self): # 5
+        mc = MyChoroplethVO()
         mc.geo_data = self.us_states
         mc.data = self.us_unemployment
         mc.name = "choropleth"
@@ -225,41 +242,28 @@ class Crime:
         mc.line_opacity = 0.5
         mc.legend_name = "Unemployment Rate (%)"
         mc.bins = list(mc.data["Unemployment"].quantile([0, 0.25, 0.5, 0.75, 1]))
+        mc.location = [48, -102]
+        mc.zoom_start = 5
+        mc.save_path = "./save/unemployment.html"
+        MyChoroplethService(mc)
 
-        map = folium.Map(location=[48, -102], zoom_start=5)
-        folium.Choropleth(
-            geo_data=mc.geo_data,
-            data=mc.data,
-            name=mc.name,
-            columns=mc.columns,
-            key_on=mc.key_on,
-            fill_color=mc.fill_color,
-            fill_opacity=mc.fill_opacity,
-            line_opacity=mc.line_opacity,
-            legend_name=mc.legend_name,
-            bins=mc.bins
-        ).add_to(map)
-        map.save("./save/unemployment.html")
+    def save_seoul_crime_map(self): # 6
+        mc = MyChoroplethVO()
+        mc.geo_data = self.kr_states
+        mc.data = self.get_seoul_crime_data()
+        mc.name = "choropleth"
+        mc.columns = ["State", "Crime Rate"]
+        mc.key_on = "feature.id"
+        mc.fill_color = "PuRd"
+        mc.fill_opacity = 0.7
+        mc.line_opacity = 0.2
+        mc.legend_name = "Crime Rate (%)"
+        mc.location = [37.5502, 126.982]
+        mc.zoom_start = 12
+        mc.save_path = "./save/seoul_crime_rate.html"
+        MyChoroplethService(mc)
 
-
-    def save_seoul_folium(self):
-        geo_data = self.kr_states
-        data = self.create_folium_data()
-        map = folium.Map(location=[37.5502, 126.982], zoom_start=12)
-        folium.Choropleth(
-            geo_data=geo_data,  # us_states,
-            data=data,  # us_unemployment,
-            name="choropleth",
-            columns=["State", "Crime Rate"],
-            key_on="feature.id",
-            fill_color="PuRd",
-            fill_opacity=0.7,
-            line_opacity=0.2,
-            legend_name='Crime Rate (%)'
-        ).add_to(map)
-        map.save("./save/unemployment.html")
-
-    def create_folium_data(self):
+    def get_seoul_crime_data(self):
         crime = self.crime
         police_pos = None
         police_norm = pd.read_pickle('./save/police_norm.pkl')

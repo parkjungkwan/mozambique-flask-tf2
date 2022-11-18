@@ -11,7 +11,7 @@ CRIME_MENUS = ["Exit", #0
                 "Save Police Normalization",#4
                 "Folium Example",#5
                 "Partition",#6
-                "미완성: Fit",#7
+                "Save Seoul Folium",#7
                 "미완성: Predicate"]#8
 
 crime_menu = {
@@ -20,7 +20,7 @@ crime_menu = {
     "3" : lambda t: t.save_cctv_pop(),
     "4" : lambda t: t.save_police_norm(),
     "5" : lambda t: t.folium_example(),
-    "6" : lambda t: t.target(),
+    "6" : lambda t: t.save_seoul_folium(),
     "7" : lambda t: t.partition()
 }
 '''
@@ -59,7 +59,8 @@ class Crime:
         self.arrest_columns = ['살인 검거', '강도 검거', '강간 검거', '절도 검거', '폭력 검거']
         self.us_states = './data/us-states.json'
         self.us_unemployment = pd.read_csv('./data/us_unemployment.csv')
-        print(self.us_unemployment)
+        self.kr_states = './data/kr-state.json'
+        print(self.kr_states)
     '''
     1.스펙보기 
     id = SERIALNO  
@@ -201,15 +202,15 @@ class Crime:
         url = (
             "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data"
         )
-        state_geo = f"{url}/us-states.json"
+        geo_data = f"{url}/us-states.json"
         state_unemployment = f"{url}/US_Unemployment_Oct2012.csv"
-        state_data = pd.read_csv(state_unemployment)
+        data = pd.read_csv(state_unemployment)
 
         bins = list(us_unemployment["Unemployment"].quantile([0, 0.25, 0.5, 0.75, 1]))
-        m = folium.Map(location=[48, -102], zoom_start=5)
+        map = folium.Map(location=[48, -102], zoom_start=5)
         folium.Choropleth(
-            geo_data=state_geo, # us_states,
-            data=state_data, #us_unemployment,
+            geo_data=geo_data, # us_states,
+            data=data, #us_unemployment,
             name="choropleth",
             columns=["State","Unemployment"],
             key_on="feature.id",
@@ -218,15 +219,49 @@ class Crime:
             line_opacity=0.5,
             legend_name='Unemployment Rate (%)',
             bins=bins
-        ).add_to(m)
-        m.save("./save/unemployment.html")
+        ).add_to(map)
+        map.save("./save/unemployment.html")
 
 
-    def ordinal(self):
-        pass
+    def save_seoul_folium(self):
+        geo_data = self.kr_states
+        data = self.create_folium_data()
+        map = folium.Map(location=[37.5502, 126.982], zoom_start=12)
+        folium.Choropleth(
+            geo_data=geo_data,  # us_states,
+            data=data,  # us_unemployment,
+            name="choropleth",
+            columns=["State", "Crime Rate"],
+            key_on="feature.id",
+            fill_color="PuRd",
+            fill_opacity=0.7,
+            line_opacity=0.2,
+            legend_name='Crime Rate (%)'
+        ).add_to(map)
+        map.save("./save/unemployment.html")
 
-    def target(self):
-        pass
+    def create_folium_data(self):
+        crime = self.crime
+        police_pos = None
+        police_norm = pd.read_pickle('./save/police_norm.pkl')
+        station_names = []
+        for name in crime['관서명']:
+            station_names.append('서울' + str(name[:-1] + '경찰서'))
+        station_addrs = []
+        station_lats = []
+        station_lngs = []
+        gmaps = (lambda x: googlemaps.Client(key=x))("")
+        for name in station_names:
+            t = gmaps.geocode(name, language='ko')
+            station_addrs.append(t[0].get('formatted_address'))
+            t_loc = t[0].get('geometry')
+            station_lats.append(t_loc['location']['lat'])
+            station_lngs.append(t_loc['location']['lng'])
+        police_pos['lat'] = station_lats
+        police_pos['lng'] = station_lngs
+        temp = police_pos[self.arrest_columns] / police_pos[self.arrest_columns].max()
+        police_pos['검거'] = np.sum(temp, axis=1)
+        return tuple(zip(police_norm['구별'], police_norm['범죄']))
 
     def partition(self):
         pass

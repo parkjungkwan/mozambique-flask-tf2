@@ -261,29 +261,14 @@ class Crime:
         MyChoroplethService(mc)
 
     def get_seoul_crime_data(self):
-        police_pos = pd.read_pickle('./save/police_pos.pkl')
         police_norm = pd.read_pickle('./save/police_norm.pkl')
-        temp = police_pos[self.arrest_columns] / police_pos[self.arrest_columns].max()
-        police_pos['검거'] = np.sum(temp, axis=1)
         return tuple(zip(police_norm.index, police_norm['범죄']))
         # police_norm.index 는 '구별'
 
-def set_json_from_df(fname):
+def set_json_from_df(fname): # 미국 주가 콜롬비아, 푸에르토-리코(준주) 포함시
     df = pd.read_json(fname)
-    '''
-    ## orient
-    df.to_json()  # default : orient='columns'
-    # Output : '{"name":{"0":"Jack","1":"Ace"},"age":{"0":26,"1":87}}'
-    df.to_json(orient='records')
-    # Output : '[{"name":"Jack","age":26},{"name":"Ace","age":87}]'
-    df.to_json(orient='index')
-    # Output : '{"0":{"name":"Jack","age":26},"1":{"name":"Ace","age":87}}'
-    '''
-    print(df.tail(3))
     df.drop(df.index[[8,51]], inplace=True)
-    ## json으로 쓰기
     df.to_json("./save/us-states.json", orient='index')
-
 
 if __name__ == '__main__':
     set_json_from_df("./data/us-states.json")

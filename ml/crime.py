@@ -50,18 +50,17 @@ None
 class MyChoroplethVO:
     geo_data = "",
     data = object,
-    name = "choropleth",
+    name = "",
     columns = [],
-    key_on = "feature.id",
+    key_on = "",
     fill_color = "",
     fill_opacity = 0.0,
     line_opacity = 0.0,
     legend_name = "",
-    bins = [],
+    bins = None,
     location = [],
     zoom_start = 0,
     save_path = ''
-
 
 def MyChoroplethService(vo):
     map = folium.Map(location=vo.location, zoom_start=vo.zoom_start)
@@ -74,8 +73,7 @@ def MyChoroplethService(vo):
         fill_color=vo.fill_color,
         fill_opacity=vo.fill_opacity,
         line_opacity=vo.line_opacity,
-        legend_name=vo.legend_name,
-        bins=vo.bins
+        legend_name=vo.legend_name
     ).add_to(map)
     map.save(vo.save_path)
 
@@ -123,7 +121,7 @@ class Crime:
         print(f" 서울시내 경찰서는 총 {len(station_names)}개 이다")
         [print(f"{str(i)}") for i in station_names]
 
-        gmaps = (lambda x: googlemaps.Client(key=x))("")
+        gmaps = (lambda x: googlemaps.Client(key=x))("AIzaSyAaD1o_2faFQ_D8aOHBGBOhvFOuuH7iE88")
         print(gmaps.geocode("서울중부경찰서", language='ko'))
         print(" ### API에서 주소추출 시작 ### ")
         station_addrs = []
@@ -264,24 +262,8 @@ class Crime:
         MyChoroplethService(mc)
 
     def get_seoul_crime_data(self):
-        crime = self.crime
-        police_pos = None
+        police_pos = pd.read_pickle('./save/police_pos.pkl')
         police_norm = pd.read_pickle('./save/police_norm.pkl')
-        station_names = []
-        for name in crime['관서명']:
-            station_names.append('서울' + str(name[:-1] + '경찰서'))
-        station_addrs = []
-        station_lats = []
-        station_lngs = []
-        gmaps = (lambda x: googlemaps.Client(key=x))("")
-        for name in station_names:
-            t = gmaps.geocode(name, language='ko')
-            station_addrs.append(t[0].get('formatted_address'))
-            t_loc = t[0].get('geometry')
-            station_lats.append(t_loc['location']['lat'])
-            station_lngs.append(t_loc['location']['lng'])
-        police_pos['lat'] = station_lats
-        police_pos['lng'] = station_lngs
         temp = police_pos[self.arrest_columns] / police_pos[self.arrest_columns].max()
         police_pos['검거'] = np.sum(temp, axis=1)
         return tuple(zip(police_norm['구별'], police_norm['범죄']))

@@ -269,7 +269,7 @@ class Crime:
         station_addrs = []
         station_lats = []
         station_lngs = []
-        gmaps = (lambda x: googlemaps.Client(key=x))("AIzaSyAaD1o_2faFQ_D8aOHBGBOhvFOuuH7iE88")
+        gmaps = (lambda x: googlemaps.Client(key=x))("")
         for name in station_names:
             t = gmaps.geocode(name, language='ko')
             station_addrs.append(t[0].get('formatted_address'))

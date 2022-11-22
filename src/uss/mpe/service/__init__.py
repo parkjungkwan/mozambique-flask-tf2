@@ -1,5 +1,5 @@
 from src.uss.mpe.service.bmi import Bmi
-from src.cmm.service.common import Common
+from src.cmm.com.service.common import Common
 
 ls = []
 while True:

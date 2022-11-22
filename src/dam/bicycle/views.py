@@ -1,4 +1,4 @@
-from src.bicycle.models import BicycleModel
+from src.dam.bicycle.models import BicycleModel
 
 
 class BicycleController(object):

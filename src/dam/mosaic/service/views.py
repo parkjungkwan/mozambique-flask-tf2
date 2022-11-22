@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from src.const.path import CTX
+from src.cmm.const.path import CTX
 from src.dam.mosaic.service.services import ImageToNumberArray, Hough, Haar, mosaic, Canny, mosaics
 from src.utl.lambdas import MosaicLambda
 import cv2 as cv

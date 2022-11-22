@@ -1,4 +1,4 @@
-from src.ext.scrapper.services import BugsMusic, MelonMusic
+from src.ext.scrapper import BugsMusic, MelonMusic
 
 
 class ScrapController:

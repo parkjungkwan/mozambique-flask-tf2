@@ -1,4 +1,4 @@
-from src.titanic.models import TitanicModel
+from src.dam.titanic.models import TitanicModel
 from src.cmm.service.dataset import Dataset
 
 

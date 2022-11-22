@@ -1,8 +1,8 @@
 # from ml.stroke import STROKE_MENUS, stroke_menu
 # from ml.stroke import StrokeService
-from src.ml.crime import Crime, CRIME_MENUS, crime_menu
-from src.ml.oklahoma import OKLAHOMA_MENUS, oklahoma_menu
-from src.ml.oklahoma import OklahomaService
+from src.dam.ml import Crime, CRIME_MENUS, crime_menu
+
+
 def my_menu(ls):
     for i, j in enumerate(ls):
         print(f"{i}. {j}")

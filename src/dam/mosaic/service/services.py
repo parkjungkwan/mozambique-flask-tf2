@@ -4,9 +4,9 @@ import numpy as np
 import requests
 from PIL import Image
 import matplotlib.pyplot as plt
-from src.const.crawler import HEADERS
+from src.cmm.const.crawler import HEADERS
 import cv2 as cv
-from src.const.path import HAAR, CTX
+from src.cmm.const.path import HAAR, CTX
 
 
 def ImageToNumberArray(url):

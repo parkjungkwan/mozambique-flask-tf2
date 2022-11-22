@@ -1,5 +1,5 @@
-from src.titanic.template import Plot
-from src.titanic.views import TitanicController
+from src.dam.titanic.template import Plot
+from src.dam.titanic.views import TitanicController
 from src.cmm.service.common import Common
 
 if __name__ == '__main__':

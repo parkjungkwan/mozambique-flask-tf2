@@ -1,5 +1,5 @@
-from src.ext.scrapper.domains import Scrap
-from src.ext.scrapper.view import ScrapController
+from src.cop.scp.service.domains import Scrap
+from src.cop.scp.service.view import ScrapController
 
 if __name__=="__main__":
     scrap = Scrap()

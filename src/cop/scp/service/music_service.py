@@ -30,6 +30,7 @@ class ScrapVO:
         self.df.to_csv(path, sep=',', na_rep="NaN", header=None)
 
 def BugsMusic(arg):
+
     soup = BeautifulSoup(urlopen(arg.domain + arg.query_string), 'lxml')
     title = {"class": arg.class_names[0]}
     artist = {"class": arg.class_names[1]}
@@ -64,11 +65,15 @@ def MelonMusic(arg):
     arg.dict_to_dataframe()
     arg.dataframe_to_csv() # csv파일로 저장
 
-
+music_menus = ["Exit", #0
+                "BugsMusic",#1
+                "MelonMusic",#2.
+                ]
 if __name__=="__main__":
     scrap = ScrapVO()
     while True:
-        menu = input("0번:종료,1번:벅스")
+        [print(f"{i}. {j}") for i, j in enumerate(music_menus)]
+        menu = input('메뉴선택: ')
         if menu == "0":
             print("종료")
             break
@@ -88,9 +93,9 @@ if __name__=="__main__":
             scrap.class_names = ["rank01", "rank02"]
             scrap.tag_name = "div"
             MelonMusic(scrap)
-
         elif menu == "3":
             df = pd.read_csv(f"{static}/save/cop/scp/bugs_ranking.csv")
             print(df)
         else:
             print("해당메뉴 없음")
+

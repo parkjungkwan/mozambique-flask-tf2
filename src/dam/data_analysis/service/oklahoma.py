@@ -1,16 +1,8 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
-from imblearn.under_sampling import RandomUnderSampler
-OKLAHOMA_MENUS = ["종료", #0
-                "데이터구조파악",#1
-                "변수한글화",#2
-                "연속형변수편집",#3 18세이상만 사용함
-                "범주형변수편집",#4
-                "샘플링",#5
-                "모델링",#6
-                "학습",#7
-                "예측"]#8
+
+from src.cmm.const.path import static
+
 oklahoma_meta = {
     'id':'아이디', 'gender':'성별', 'age':'나이',
     'hypertension':'고혈압',
@@ -23,17 +15,7 @@ oklahoma_meta = {
     'smoking_status':'흡연여부',
     'stroke':'뇌졸중'
 }
-oklahoma_menu = {
-    "1" : lambda t: t.spec(),
-    "2" : lambda t: t.rename_meta(),
-    "3" : lambda t: t.interval_variables(),
-    "4" : lambda t: t.categorical_variables(),
-    "5" : lambda t: t.sampling(),
-    "6" : lambda t: print(" ** No Function ** "),
-    "7" : lambda t: print(" ** No Function ** "),
-    "8" : lambda t: print(" ** No Function ** "),
 
-}
 '''
 <class 'pandas.core.frame.DataFrame'>
 RangeIndex: 5110 entries, 0 to 5109
@@ -57,31 +39,36 @@ memory usage: 479.2+ KB
 None
 '''
 
-class OklahomaService:
+class Oklahoma:
+
+    data = f"{static}/data/dam/oklahoma"
+    save = f"{static}/save/dam/oklahoma"
+
     def __init__(self):
-        self.oklahoma = pd.read_csv('./data/combo32.csv')
+        self.oklahoma = pd.read_csv(f'{self.data}/comb32.csv')
         self.my_oklahoma = None
 
     '''
     1.스펙보기
     '''
     def spec(self):
+        ok = self.oklahoma
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
         print(" --- 1.Shape ---")
-        print(self.oklahoma.shape)
+        print(ok.shape)
         print(" --- 2.Features ---")
-        print(self.oklahoma.columns)
+        print(ok.columns)
         print(" --- 3.Info ---")
-        print(self.oklahoma.info())
+        print(ok.info())
         print(" --- 4.Case Top1 ---")
-        print(self.oklahoma.head(1))
+        print(ok.head(1))
         print(" --- 5.Case Bottom1 ---")
-        print(self.oklahoma.tail(3))
+        print(ok.tail(3))
         print(" --- 6.Describe ---")
-        print(self.oklahoma.describe())
+        print(ok.describe())
         print(" --- 7.Describe All ---")
-        print(self.oklahoma.describe(include='all'))
+        print(ok.describe(include='all'))
     '''
     2.한글 메타데이터
     '''
@@ -137,7 +124,7 @@ class OklahomaService:
         self.oklahoma = t
         self.spec()
         print(" ### 프리프로세스 종료 ### ")
-        self.oklahoma.to_csv("./save/oklahoma.csv")
+        self.oklahoma.to_csv(f"{self.save}/oklahoma.csv")
 
     def ordinal(self): # 해당 컬럼이 없음
         pass
@@ -148,3 +135,39 @@ class OklahomaService:
     def partition(self):
         pass
 
+oklahoma_menu = ["종료", #0
+                "데이터구조파악",#1
+                "변수한글화",#2
+                "연속형변수편집",#3 18세이상만 사용함
+                "범주형변수편집",#4
+                "샘플링",#5
+                "모델링",#6
+                "학습",#7
+                "예측"]#8
+oklahoma_lambda = {
+    "1" : lambda x: x.spec(),
+    "2" : lambda x: x.rename_meta(),
+    "3" : lambda x: x.interval_variables(),
+    "4" : lambda x: x.categorical_variables(),
+    "5" : lambda x: x.sampling(),
+    "6" : lambda x: print(" ** No Function ** "),
+    "7" : lambda x: print(" ** No Function ** "),
+    "8" : lambda x: print(" ** No Function ** "),
+
+}
+if __name__ == '__main__':
+    oklahoma = Oklahoma()
+    while True:
+        [print(f"{i}. {j}") for i, j in enumerate(oklahoma_menu)]
+        menu = input('메뉴선택: ')
+        if menu == '0':
+            print("종료")
+            break
+        else:
+            try:
+                oklahoma_lambda[menu](oklahoma)
+            except KeyError as e:
+                if 'some error message' in str(e):
+                    print('Caught error message')
+                else:
+                    print("Didn't catch error message")

@@ -2,15 +2,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
 from imblearn.under_sampling import RandomUnderSampler
-STROKE_MENUS = ["Exit", #0
-                "Spec",#1
-                "Rename",#2
-                "Inteval",#3 18세이상만 사용함
-                "Norminal",#4
-                "Target",#5
-                "Partition",#6
-                "미완성: Fit",#7
-                "미완성: Predicate"]#8
+
+from src.cmm.const.path import static
+
+
 stroke_meta = {
     'id':'아이디', 'gender':'성별', 'age':'나이', 
     'hypertension':'고혈압',
@@ -23,18 +18,7 @@ stroke_meta = {
     'smoking_status':'흡연여부',
     'stroke':'뇌졸중'
 }
-stroke_menu = {
-    "1" : lambda t: t.spec(),
-    "2" : lambda t: t.rename_meta(),
-    "3" : lambda t: t.interval_variables(),
-    "4" : lambda t: t.categorical_variables(),
-    "5" : lambda t: t.partition(),
-    "6" : lambda t: t.partition(),
-    "7" : lambda t: print(" ** No Function ** "),
-    "8" : lambda t: print(" ** No Function ** "),
-    "9" : lambda t: print(" ** No Function ** "),
 
-}
 '''
 <class 'pandas.core.frame.DataFrame'>
 RangeIndex: 5110 entries, 0 to 5109
@@ -58,9 +42,13 @@ memory usage: 479.2+ KB
 None
 '''
 
-class StrokeService:
+class Stroke:
+
+    data_path = f"{static}/data/dam/stroke"
+    save = f"{static}/save/dam/stroke"
+
     def __init__(self):
-        self.stroke = pd.read_csv('../data/healthcare-dataset-stroke-data.csv')
+        self.stroke = pd.read_csv(f'{self.data_path}/healthcare-dataset-stroke-data.csv')
         self.my_stroke = None
         self.adult_stoke = None
         self.target = None
@@ -138,7 +126,7 @@ class StrokeService:
         self.stroke = t
         self.spec()
         print(" ### 프리프로세스 종료 ### ")
-        self.stroke.to_csv("./save/stroke.csv")
+        self.stroke.to_csv(f"{self.save}/stroke.csv")
 
     def ordinal(self): # 해당 컬럼이 없음
         pass
@@ -148,7 +136,7 @@ class StrokeService:
     target 과 data 에 분리하여 저장한다.
     '''
     def target(self):
-        df = pd.read_csv('../save/stroke.csv')
+        df = pd.read_csv(f'{self.save}/stroke.csv')
         self.data = df.drop(['뇌졸중'], axis=1)
         self.target = df['뇌졸중']
         print(f'--- data shape --- \n {self.data}')
@@ -167,6 +155,40 @@ class StrokeService:
         print("y_train shape:", y_train.shape)
         print("y_test shape:", y_test.shape)
 
-
-
+stroke_menu = ["Exit", #0
+                "Spec",#1
+                "Rename",#2
+                "Inteval",#3 18세이상만 사용함
+                "Norminal",#4
+                "Target",#5
+                "Partition",#6
+                "미완성: Fit",#7
+                "미완성: Predicate"]#8
+stroke_lambda = {
+    "1" : lambda x: x.spec(),
+    "2" : lambda x: x.rename_meta(),
+    "3" : lambda x: x.interval_variables(),
+    "4" : lambda x: x.categorical_variables(),
+    "5" : lambda x: x.partition(),
+    "6" : lambda x: x.partition(),
+    "7" : lambda x: print(" ** No Function ** "),
+    "8" : lambda x: print(" ** No Function ** "),
+    "9" : lambda x: print(" ** No Function ** "),
+}
+if __name__ == '__main__':
+    stroke = Stroke()
+    while True:
+        [print(f"{i}. {j}") for i, j in enumerate(stroke_menu)]
+        menu = input('메뉴선택: ')
+        if menu == '0':
+            print("종료")
+            break
+        else:
+            try:
+                stroke_lambda[menu](stroke)
+            except KeyError as e:
+                if 'some error message' in str(e):
+                    print('Caught error message')
+                else:
+                    print("Didn't catch error message")
         

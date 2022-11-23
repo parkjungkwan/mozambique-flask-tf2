@@ -141,7 +141,7 @@ def Canny2(src, lowThreshold,highThreshold):
                     Z[i, j] = 0
 
             except IndexError as e:  # 인덱싱 예외 발생 시 pass
-                pass
+                print(f" Error is {e}")
 
     M, N = img.shape
     res = np.zeros((M, N), dtype=np.int32)

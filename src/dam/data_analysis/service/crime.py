@@ -264,7 +264,7 @@ def set_json_from_df(fname):
     df.drop(df.index[[8,51]], inplace=True)
     df.to_json(f"{static}/data/dam/crime/us-states.json", orient='index')
 
-crime_menus = ["Exit", #0
+crime_menu = ["Exit", #0
                 "Show Spec",#1
                 "Save Police Position",#2.
                 "Save CCTV Population",#3
@@ -272,7 +272,7 @@ crime_menus = ["Exit", #0
                 "Save US Unemployment Map",#5
                 "Save Seoul Crime Map",#6
                 ]
-crime_menu = {
+crime_lambda = {
     "1" : lambda x: x.show_spec(),
     "2" : lambda x: x.save_police_pos(),
     "3" : lambda x: x.save_cctv_pop(),
@@ -283,14 +283,14 @@ crime_menu = {
 if __name__ == '__main__':
     crime = Crime()
     while True:
-        [print(f"{i}. {j}") for i, j in enumerate(crime_menus)]
+        [print(f"{i}. {j}") for i, j in enumerate(crime_menu)]
         menu = input('메뉴선택: ')
         if menu == '0':
             print("종료")
             break
         else:
             try:
-                crime_menu[menu](crime)
+                crime_lambda[menu](crime)
             except KeyError as e:
                 if 'some error message' in str(e):
                     print('Caught error message')
